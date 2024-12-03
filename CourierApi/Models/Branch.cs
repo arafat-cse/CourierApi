@@ -9,7 +9,9 @@ namespace CourierApi.Models
         public int branchId { get; set; }
         public string? branchName { get; set; }
         public string? address { get; set; }
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; } // Nullable for root branches
+        public Branch ParentBranch { get; set; } // Navigation property for Parent
+        public ICollection<Branch> ChildBranches { get; set; } // Navigation property for Children
         public string? createBy { get; set; }
         public DateTime? createDate { get; set; }
         public string? updateBy { get; set; }
