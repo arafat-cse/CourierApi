@@ -12,11 +12,10 @@ namespace CourierApi.Models
         public int ReceiverCustomerId { get; set; }
         public DateTime SendTime { get; set; }
         public DateTime ReceiveTime { get; set; }
-        [ForeignKey("Branch")]
         public int SenderBranchId { get; set; }
-        public virtual Branch? Branchs { get; set; }
         [ForeignKey("Branch")]
         public int ReceiverBranchId { get; set; }
+        public virtual Branch? Branchs { get; set; }
         public DateTime EstimatedReceiveTime { get; set; }
         public bool IsPaid { get; set; }
         [ForeignKey("Van")]

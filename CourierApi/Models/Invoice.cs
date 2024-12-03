@@ -17,7 +17,7 @@ namespace CourierApi.Models
         public int paymentMethodId { get; set; }
        public virtual PaymentMethod? PaymentMethods { get; set; }
         [ForeignKey("Parcel")]
-        public int ParcelsID { get; set; }
+        public int ParcelsId { get; set; }
         public virtual Parcel? Parcels { get; set; }
         public string? createBy { get; set; }
         public DateTime createDate { get; set; }
