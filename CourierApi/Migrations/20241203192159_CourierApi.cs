@@ -12,6 +12,32 @@ namespace CourierApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Branches",
+                columns: table => new
+                {
+                    branchId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    branchName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Branches", x => x.branchId);
+                    table.ForeignKey(
+                        name: "FK_Branches_Branches_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Branches",
+                        principalColumn: "branchId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Companys",
                 columns: table => new
                 {
@@ -174,37 +200,6 @@ namespace CourierApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Branches",
-                columns: table => new
-                {
-                    branchId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    branchName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    staffId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Branches", x => x.branchId);
-                    table.ForeignKey(
-                        name: "FK_Branches_Branches_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Branches",
-                        principalColumn: "branchId");
-                    table.ForeignKey(
-                        name: "FK_Branches_Staffs_staffId",
-                        column: x => x.staffId,
-                        principalTable: "Staffs",
-                        principalColumn: "staffId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BranchesStaffs",
                 columns: table => new
                 {
@@ -339,11 +334,6 @@ namespace CourierApi.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Branches_staffId",
-                table: "Branches",
-                column: "staffId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BranchesStaffs_staffId",
                 table: "BranchesStaffs",
                 column: "staffId");
@@ -405,6 +395,9 @@ namespace CourierApi.Migrations
                 name: "Companys");
 
             migrationBuilder.DropTable(
+                name: "Staffs");
+
+            migrationBuilder.DropTable(
                 name: "Customers");
 
             migrationBuilder.DropTable(
@@ -421,9 +414,6 @@ namespace CourierApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "vans");
-
-            migrationBuilder.DropTable(
-                name: "Staffs");
 
             migrationBuilder.DropTable(
                 name: "ParsersTypes");
