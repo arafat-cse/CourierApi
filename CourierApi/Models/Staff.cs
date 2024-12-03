@@ -15,6 +15,6 @@ namespace CourierApi.Models
         public DateTime updateBy { get; set; }
         public DateTime? updateDate { get; set; }
         public bool IsActive { get; set; }
-        public virtual ICollection<Branch>? Branchs { get; set; }
+       
     }
 }

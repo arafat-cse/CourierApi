@@ -90,9 +90,6 @@ namespace CourierApi.Migrations
                     b.Property<DateTime?>("createDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("staffId")
-                        .HasColumnType("int");
-
                     b.Property<string>("updateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -102,8 +99,6 @@ namespace CourierApi.Migrations
                     b.HasKey("branchId");
 
                     b.HasIndex("ParentId");
-
-                    b.HasIndex("staffId");
 
                     b.ToTable("Branches");
                 });
@@ -539,11 +534,8 @@ namespace CourierApi.Migrations
                 {
                     b.HasOne("CourierApi.Models.Branch", "Parent")
                         .WithMany("ChildBranches")
-                        .HasForeignKey("ParentId");
-
-                    b.HasOne("CourierApi.Models.Staff", null)
-                        .WithMany("Branchs")
-                        .HasForeignKey("staffId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });
@@ -659,11 +651,6 @@ namespace CourierApi.Migrations
             modelBuilder.Entity("CourierApi.Models.PaymentMethod", b =>
                 {
                     b.Navigation("Invoices");
-                });
-
-            modelBuilder.Entity("CourierApi.Models.Staff", b =>
-                {
-                    b.Navigation("Branchs");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Van", b =>

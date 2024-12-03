@@ -20,5 +20,15 @@ namespace CourierApi.Data
         public DbSet<ParcelType> ParsersTypes { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Van> vans { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Branch>()
+                .HasOne(b => b.Parent) // Parent সম্পর্ক
+                .WithMany(b => b.ChildBranches) // ChildBranches সম্পর্ক
+                .HasForeignKey(b => b.ParentId)
+                .OnDelete(DeleteBehavior.Restrict); // Restrict delete to prevent cascade delete
+        }
     }
+   
+
 }
