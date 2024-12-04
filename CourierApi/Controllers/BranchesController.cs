@@ -84,25 +84,5 @@ namespace CourierApi.Controllers
             return CreatedAtAction("GetBranch", new { id = branch.branchId }, branch);
         }
 
-        // DELETE: api/Branches/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBranch(int id)
-        {
-            var branch = await _context.Branches.FindAsync(id);
-            if (branch == null)
-            {
-                return NotFound();
-            }
-
-            _context.Branches.Remove(branch);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool BranchExists(int id)
-        {
-            return _context.Branches.Any(e => e.branchId == id);
-        }
     }
 }
