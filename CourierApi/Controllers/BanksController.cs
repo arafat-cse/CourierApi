@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class BanksController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
         public BanksController(CourierDbContext context)
         {
-            _context = context;
+            _db = context;
         }
 
-        // GET: api/Banks
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBanks()
         {
-            return await _context.Banks.ToListAsync();
+            return await _db.Banks.ToListAsync();
         }
 
-        // GET: api/Banks/5
+        // GET: For Id
         [HttpGet("{id}")]
         public async Task<ActionResult<Bank>> GetBank(int id)
         {
-            var bank = await _context.Banks.FindAsync(id);
+            var bank = await _db.Banks.FindAsync(id);
 
             if (bank == null)
             {
@@ -42,8 +42,7 @@ namespace CourierApi.Controllers
             return bank;
         }
 
-        // PUT: api/Banks/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: For Id
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBank(int id, Bank bank)
         {
@@ -52,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(bank).State = EntityState.Modified;
+            _db.Entry(bank).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -70,39 +69,39 @@ namespace CourierApi.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(new { Message = "Bank Update successfully", bankId = id });
         }
 
-        // POST: api/Banks
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: 
         [HttpPost]
         public async Task<ActionResult<Bank>> PostBank(Bank bank)
         {
-            _context.Banks.Add(bank);
-            await _context.SaveChangesAsync();
+            _db.Banks.Add(bank);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetBank", new { id = bank.bankId }, bank);
         }
 
-        // DELETE: api/Banks/5
+        // DELETE: For Id
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBank(int id)
         {
-            var bank = await _context.Banks.FindAsync(id);
+            var bank = await _db.Banks.FindAsync(id);
             if (bank == null)
             {
                 return NotFound();
             }
 
-            _context.Banks.Remove(bank);
-            await _context.SaveChangesAsync();
+            _db.Banks.Remove(bank);
+            await _db.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new { Message = "Bank Delete successfully", bankId = id });
+
         }
 
         private bool BankExists(int id)
         {
-            return _context.Banks.Any(e => e.bankId == id);
+            return _db.Banks.Any(e => e.bankId == id);
         }
     }
 }
