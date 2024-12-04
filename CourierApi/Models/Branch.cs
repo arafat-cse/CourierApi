@@ -11,8 +11,8 @@ namespace CourierApi.Models
         public string? address { get; set; }
         [ForeignKey("Parent")]
         public int? ParentId { get; set; } // Nullable for root branches
-        public virtual Branch Parent { get; set; } // Navigation property for Parent
-        public virtual ICollection<Branch> ChildBranches { get; set; } // Navigation property for Children
+        public virtual Branch? Parent { get; set; } // Navigation property for Parent
+        public virtual ICollection<Branch>? ChildBranches { get; set; } // Navigation property for Children
         public string? createBy { get; set; }
         public DateTime? createDate { get; set; }
         public string? updateBy { get; set; }

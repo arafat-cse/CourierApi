@@ -20,36 +20,106 @@ namespace CourierApi.Controllers
         {
             _context = context;
         }
-
         // GET: api/Branches
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Branch>>> GetBranches()
+        public IActionResult GetBranches()
         {
-            return await _context.Branches.ToListAsync();
-        }
+            // Branches All ChildBranches loading
+            var branches = _context.Branches
+                                     .Include(b => b.ChildBranches)
+                                     .ToList();
 
+            // Entity to DTO- Data Convert
+            var branchDTOs = branches.Select(b => new BranchDTO
+            {
+                BranchId = b.branchId,
+                BranchName = b.branchName,
+                Address = b.address,
+                ParentId = b.ParentId,
+                IsActive = b.IsActive,
+                ChildBranches = b.ChildBranches?.Select(cb => new BranchDTO
+                {
+                    BranchId = cb.branchId,
+                    BranchName = cb.branchName,
+                    Address = cb.address,
+                    ParentId = cb.ParentId,
+                    IsActive = cb.IsActive
+                }).ToList()
+            }).ToList();
+
+            return Ok(branchDTOs);
+        }
+       
         // GET: api/Branches/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Branch>> GetBranch(int id)
+        public async Task<ActionResult<BranchDTO>> GetBranch(int id)
         {
-            var branch = await _context.Branches.FindAsync(id);
+            var branch = await _context.Branches
+                .Include(b => b.ChildBranches) // Include Child branches
+                .FirstOrDefaultAsync(b => b.branchId == id);
 
             if (branch == null)
             {
                 return NotFound();
             }
 
-            return branch;
+            // Map to DTO
+            var branchDto = new BranchDTO
+            {
+                BranchId = branch.branchId,
+                BranchName = branch.branchName,
+                Address = branch.address,
+                ParentId = branch.ParentId,
+                IsActive = branch.IsActive,
+                ChildBranches = branch.ChildBranches?.Select(cb => new BranchDTO
+                {
+                    BranchId = cb.branchId,
+                    BranchName = cb.branchName,
+                    Address = cb.address,
+                    ParentId = cb.ParentId,
+                    IsActive = cb.IsActive
+                }).ToList()
+            };
+
+            return Ok(branchDto);
+        }
+        // POST: api/Branches
+        [HttpPost]
+        public async Task<ActionResult<Branch>> PostBranch(Branch branch)
+        {
+            // Check if Parent exists if ParentId is provided
+            if (branch.ParentId.HasValue)
+            {
+                var parentBranch = await _context.Branches.FindAsync(branch.ParentId.Value);
+                if (parentBranch == null)
+                {
+                    return BadRequest("Invalid ParentId.");
+                }
+            }
+
+            _context.Branches.Add(branch);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetBranch", new { id = branch.branchId }, branch);
         }
 
         // PUT: api/Branches/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBranch(int id, Branch branch)
         {
             if (id != branch.branchId)
             {
                 return BadRequest();
+            }
+
+            // Check if new Parent exists if ParentId is updated
+            if (branch.ParentId.HasValue && branch.ParentId != id)
+            {
+                var parentBranch = await _context.Branches.FindAsync(branch.ParentId.Value);
+                if (parentBranch == null)
+                {
+                    return BadRequest("Invalid ParentId.");
+                }
             }
 
             _context.Entry(branch).State = EntityState.Modified;
@@ -73,16 +143,34 @@ namespace CourierApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Branches
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Branch>> PostBranch(Branch branch)
+        // DELETE: api/Branches/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBranch(int id)
         {
-            _context.Branches.Add(branch);
+            var branch = await _context.Branches
+                .Include(b => b.ChildBranches) // Load Child branches
+                .FirstOrDefaultAsync(b => b.branchId == id);
+
+            if (branch == null)
+            {
+                return NotFound();
+            }
+
+            // Prevent deletion if it has children
+            if (branch.ChildBranches != null && branch.ChildBranches.Any())
+            {
+                return BadRequest("Cannot delete a branch that has child branches.");
+            }
+
+            _context.Branches.Remove(branch);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBranch", new { id = branch.branchId }, branch);
+            return NoContent();
         }
 
+        private bool BranchExists(int id)
+        {
+            return _context.Branches.Any(e => e.branchId == id);
+        }
     }
 }
