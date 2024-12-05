@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class PaymentMethodsController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public PaymentMethodsController(CourierDbContext context)
+        public PaymentMethodsController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/PaymentMethods
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PaymentMethod>>> GetPaymentMethods()
         {
-            return await _context.PaymentMethods.ToListAsync();
+            return await _db.PaymentMethods.ToListAsync();
         }
 
         // GET: api/PaymentMethods/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PaymentMethod>> GetPaymentMethod(int id)
         {
-            var paymentMethod = await _context.PaymentMethods.FindAsync(id);
+            var paymentMethod = await _db.PaymentMethods.FindAsync(id);
 
             if (paymentMethod == null)
             {
@@ -51,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(paymentMethod).State = EntityState.Modified;
+            _db.Entry(paymentMethod).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +76,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<PaymentMethod>> PostPaymentMethod(PaymentMethod paymentMethod)
         {
-            _context.PaymentMethods.Add(paymentMethod);
-            await _context.SaveChangesAsync();
+            _db.PaymentMethods.Add(paymentMethod);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetPaymentMethod", new { id = paymentMethod.paymentMethodId }, paymentMethod);
         }
@@ -86,21 +86,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentMethod(int id)
         {
-            var paymentMethod = await _context.PaymentMethods.FindAsync(id);
+            var paymentMethod = await _db.PaymentMethods.FindAsync(id);
             if (paymentMethod == null)
             {
                 return NotFound();
             }
 
-            _context.PaymentMethods.Remove(paymentMethod);
-            await _context.SaveChangesAsync();
+            _db.PaymentMethods.Remove(paymentMethod);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool PaymentMethodExists(int id)
         {
-            return _context.PaymentMethods.Any(e => e.paymentMethodId == id);
+            return _db.PaymentMethods.Any(e => e.paymentMethodId == id);
         }
     }
 }

@@ -16,9 +16,9 @@ namespace CourierApi.Controllers
     {
         private readonly CourierDbContext _db;
 
-        public BanksController(CourierDbContext context)
+        public BanksController(CourierDbContext db)
         {
-            _db = context;
+            _db = db;
         }
 
         // GET: 
