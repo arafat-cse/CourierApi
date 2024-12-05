@@ -33,7 +33,6 @@ namespace CourierApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CommanResponse>> GetCompany(int id)
         {
-            
             try
             {
                 var company = await _db.Companys.FindAsync(id);
@@ -66,13 +65,10 @@ namespace CourierApi.Controllers
                 return BadRequest(cp); // Return BadRequest with the common response in case of failure
             }
         }
-
         // 3. POST a New Company
         [HttpPost]
         public async Task<ActionResult<Company>> PostCompany(Company company)
         {
-           
-
             try
             {
                 _db.Companys.Add(company);
@@ -96,9 +92,6 @@ namespace CourierApi.Controllers
                 return BadRequest(cp); // Return BadRequest with the common response in case of failure
             }
 
-
-
-            /*return CreatedAtAction(nameof(GetCompany), new { id = company.companyId }, company);*/
         }
         // 4. PUT Update a Company
         [HttpPut("{id}")]
