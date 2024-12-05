@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourierApi.Data;
 using CourierApi.Models;
+using NuGet.Protocol;
 
 namespace CourierApi.Controllers
 {
@@ -14,35 +15,86 @@ namespace CourierApi.Controllers
     [ApiController]
     public class BranchStaffsController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public BranchStaffsController(CourierDbContext context)
+        public BranchStaffsController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
-
+        //CommanResponse
+        CommanResponse cp = new CommanResponse();
         // GET: api/BranchStaffs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BranchStaff>>> GetBranchesStaffs()
         {
-            return await _context.BranchesStaffs.ToListAsync();
-        }
+            try
+            {
 
-        // GET: api/BranchStaffs/5
-        [HttpGet("{id}")]
+                var branchStaffs = await _db.BranchesStaffs.ToListAsync();
+                if (branchStaffs == null || !branchStaffs.Any())
+                {
+                    cp.errorMessage = null;
+                    cp.status = true;
+                    cp.message = "No BranchStaff found.";
+                    cp.content = null;
+                    return Ok(cp);
+                }
+
+                // Populate response for a successful find
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "BranchStaff retrieved successfully!";
+                cp.content = branchStaffs;
+
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the BranchStaff.";
+                cp.content = null;
+
+                return BadRequest(cp);
+            }
+        }
+            // GET: api/BranchStaffs/5
+            [HttpGet("{id}")]
         public async Task<ActionResult<BranchStaff>> GetBranchStaff(int id)
         {
-            var branchStaff = await _context.BranchesStaffs.FindAsync(id);
-
-            if (branchStaff == null)
+          
+            try
             {
-                return NotFound();
+                // Find the company by ID
+                var branchStaff = await _db.BranchesStaffs.FindAsync(id);
+
+                if (branchStaff == null)
+                {
+                    cp.errorMessage = "BranchesStaff not found";
+                    cp.status = false;
+                    cp.message = "No BranchesStaff exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+
+                // Populate response for a successful retrieval
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "BranchesStaff retrieved successfully!";
+                cp.content = branchStaff;
+                return Ok(cp);
             }
-
-            return branchStaff;
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the BranchesStaff.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
-
-        // PUT: api/BranchStaffs/5      
+        // PUT: api/BranchStaffs/5 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBranchStaff(int id, BranchStaff branchStaff)
         {
@@ -51,11 +103,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(branchStaff).State = EntityState.Modified;
+            _db.Entry(branchStaff).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +128,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<BranchStaff>> PostBranchStaff(BranchStaff branchStaff)
         {
-            _context.BranchesStaffs.Add(branchStaff);
-            await _context.SaveChangesAsync();
+            _db.BranchesStaffs.Add(branchStaff);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetBranchStaff", new { id = branchStaff.branchStaffId }, branchStaff);
         }
@@ -86,21 +138,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBranchStaff(int id)
         {
-            var branchStaff = await _context.BranchesStaffs.FindAsync(id);
+            var branchStaff = await _db.BranchesStaffs.FindAsync(id);
             if (branchStaff == null)
             {
                 return NotFound();
             }
 
-            _context.BranchesStaffs.Remove(branchStaff);
-            await _context.SaveChangesAsync();
+            _db.BranchesStaffs.Remove(branchStaff);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool BranchStaffExists(int id)
         {
-            return _context.BranchesStaffs.Any(e => e.branchStaffId == id);
+            return _db.BranchesStaffs.Any(e => e.branchStaffId == id);
         }
     }
 }

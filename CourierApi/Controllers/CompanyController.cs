@@ -44,7 +44,7 @@ namespace CourierApi.Controllers
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Companies retrieved successfully!";
-                cp.content = company.ToJson(); 
+                cp.content = company; 
 
                 return Ok(cp); 
             }
@@ -63,7 +63,6 @@ namespace CourierApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CommanResponse>> GetCompany(int id)
         {
-            CommanResponse cp = new CommanResponse();
 
             try
             {
@@ -83,7 +82,7 @@ namespace CourierApi.Controllers
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Company retrieved successfully!";
-                cp.content = company.ToJson(); 
+                cp.content = company; 
                 return Ok(cp); 
             }
             catch (Exception ex)
@@ -108,7 +107,7 @@ namespace CourierApi.Controllers
                 cp.errorMessage = null; // No error since the operation is successful
                 cp.status = true; // Success status
                 cp.message = "Company created successfully!";
-                cp.content = company.ToJson();
+                cp.content = company;
 
                 // Returning the common response with CreatedAtAction
                 return CreatedAtAction(nameof(GetCompany), new { id = company.companyId }, cp);
@@ -188,7 +187,7 @@ namespace CourierApi.Controllers
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Company deleted successfully!";
-                cp.content = company.ToJson();
+                cp.content = company;
                 return Ok(cp); 
             }
             catch (Exception ex)
