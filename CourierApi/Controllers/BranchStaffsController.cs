@@ -42,8 +42,7 @@ namespace CourierApi.Controllers
             return branchStaff;
         }
 
-        // PUT: api/BranchStaffs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/BranchStaffs/5      
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBranchStaff(int id, BranchStaff branchStaff)
         {
@@ -73,8 +72,7 @@ namespace CourierApi.Controllers
             return NoContent();
         }
 
-        // POST: api/BranchStaffs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/BranchStaffs      
         [HttpPost]
         public async Task<ActionResult<BranchStaff>> PostBranchStaff(BranchStaff branchStaff)
         {
