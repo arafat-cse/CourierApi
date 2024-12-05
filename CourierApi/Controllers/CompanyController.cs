@@ -25,16 +25,49 @@ namespace CourierApi.Controllers
 
         //1. Get All Companys
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Company>>> GetCompany()
+        public async Task<ActionResult<CommanResponse>> GetCompany()
         {
-            return await _db.Companys.ToListAsync();
+            try
+            {
+               
+                var company = await _db.Companys.ToListAsync(); 
+                if (company == null || !company.Any())
+                {
+                    cp.errorMessage = null; 
+                    cp.status = true;
+                    cp.message = "No companies found.";
+                    cp.content = null;
+                    return Ok(cp); 
+                }
+
+                // Populate response for a successful find
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Companies retrieved successfully!";
+                cp.content = company.ToJson(); 
+
+                return Ok(cp); 
+            }
+            catch (Exception ex)
+            {   
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the companies.";
+                cp.content = null;
+
+                return BadRequest(cp); 
+            }
         }
+
         // 2. GET a Company by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<CommanResponse>> GetCompany(int id)
         {
+            CommanResponse cp = new CommanResponse();
+
             try
             {
+                // Find the company by ID
                 var company = await _db.Companys.FindAsync(id);
 
                 if (company == null)
@@ -43,26 +76,24 @@ namespace CourierApi.Controllers
                     cp.status = false;
                     cp.message = "No company exists with the provided ID.";
                     cp.content = null;
-
-                    return NotFound(cp); // Return NotFound with the common response
+                    return NotFound(cp); 
                 }
 
-                // Populate response for a successful find
+                // Populate response for a successful retrieval
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Company retrieved successfully!";
-                cp.content = company.ToJson();
-
-                return Ok(cp); // Return OK with the common response
+                cp.content = company.ToJson(); 
+                return Ok(cp); 
             }
             catch (Exception ex)
             {
+                // Handle exceptions
                 cp.errorMessage = ex.Message;
                 cp.status = false;
                 cp.message = "An error occurred while retrieving the company.";
                 cp.content = null;
-
-                return BadRequest(cp); // Return BadRequest with the common response in case of failure
+                return BadRequest(cp); 
             }
         }
         // 3. POST a New Company
@@ -88,8 +119,7 @@ namespace CourierApi.Controllers
                 cp.status = false;
                 cp.message = "Failed to create company.";
                 cp.content = null;
-
-                return BadRequest(cp); // Return BadRequest with the common response in case of failure
+                return BadRequest(cp); 
             }
 
         }
@@ -105,7 +135,7 @@ namespace CourierApi.Controllers
                 cp.message = "company not found";
                 cp.content = null;
                 return BadRequest(cp);
-               /* return BadRequest("Company ID mismatch");*/
+               
             }
 
             _db.Entry(company).State = EntityState.Modified;
@@ -128,22 +158,47 @@ namespace CourierApi.Controllers
 
             return Ok(new { Message = "Company updated successfully", CompanyId = id });
         }
-
-        // DELETE a Company (Optional if required)
+   
+        // DELETE a Company
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCompany(int id)
+        public async Task<ActionResult<CommanResponse>> DeleteCompany(int id)
         {
-            var company = await _db.Companys.FindAsync(id);
+            CommanResponse cp = new CommanResponse();
 
-            if (company == null)
+            try
             {
-                return NotFound("Company not found");
+                // Find the company by ID
+                var company = await _db.Companys.FindAsync(id);
+
+                if (company == null)
+                {
+                    // Company not found response
+                    cp.errorMessage = "Company not found";
+                    cp.status = false;
+                    cp.message = "No company exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp); 
+                }
+
+                // Remove the company and save changes
+                _db.Companys.Remove(company);
+                await _db.SaveChangesAsync();
+
+                // Populate success response
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Company deleted successfully!";
+                cp.content = company.ToJson();
+                return Ok(cp); 
             }
-
-            _db.Companys.Remove(company);
-            await _db.SaveChangesAsync();
-
-            return Ok(new { Message = "Company Delete successfully", CompanyId = id });
+            catch (Exception ex)
+            {  
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while deleting the company.";
+                cp.content = null;
+                return BadRequest(cp); 
+            }
         }
 
     }
