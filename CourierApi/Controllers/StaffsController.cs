@@ -125,6 +125,7 @@ namespace CourierApi.Controllers
 
         }
         // 4. PUT Update a Staff
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStaff(int id, Staff staff)
         {
@@ -155,7 +156,21 @@ namespace CourierApi.Controllers
                 }
             }
 
+
             return Ok(new { Message = "New Staff updated successfully", staffId = id });
+
+            return NoContent();
+        }
+
+        // POST: api/Staffs
+        [HttpPost]
+        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
+        {
+            _db.Staffs.Add(staff);
+            await _db.SaveChangesAsync();
+
+            return CreatedAtAction("GetStaff", new { id = staff.staffId }, staff);
+
         }
 
         // DELETE: api/Staffs/5

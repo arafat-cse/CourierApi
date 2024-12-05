@@ -43,7 +43,6 @@ namespace CourierApi.Controllers
         }
 
         // PUT: api/ParcelTypes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutParcelType(int id, ParcelType parcelType)
         {
@@ -73,8 +72,7 @@ namespace CourierApi.Controllers
             return NoContent();
         }
 
-        // POST: api/ParcelTypes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/ParcelTypes 
         [HttpPost]
         public async Task<ActionResult<ParcelType>> PostParcelType(ParcelType parcelType)
         {
