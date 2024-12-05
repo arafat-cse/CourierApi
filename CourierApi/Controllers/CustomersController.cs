@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public CustomersController(CourierDbContext context)
+        public CustomersController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/Customers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            return await _context.Customers.ToListAsync();
+            return await _db.Customers.ToListAsync();
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _db.Customers.FindAsync(id);
 
             if (customer == null)
             {
@@ -51,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
+            _db.Entry(customer).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +76,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            _db.Customers.Add(customer);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetCustomer", new { id = customer.customerId }, customer);
         }
@@ -86,21 +86,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _db.Customers.FindAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            _db.Customers.Remove(customer);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool CustomerExists(int id)
         {
-            return _context.Customers.Any(e => e.customerId == id);
+            return _db.Customers.Any(e => e.customerId == id);
         }
     }
 }

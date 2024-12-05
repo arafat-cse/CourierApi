@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class VansController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public VansController(CourierDbContext context)
+        public VansController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/Vans
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Van>>> Getvans()
         {
-            return await _context.vans.ToListAsync();
+            return await _db.vans.ToListAsync();
         }
 
         // GET: api/Vans/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Van>> GetVan(int id)
         {
-            var van = await _context.vans.FindAsync(id);
+            var van = await _db.vans.FindAsync(id);
 
             if (van == null)
             {
@@ -52,11 +52,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(van).State = EntityState.Modified;
+            _db.Entry(van).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -77,8 +77,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Van>> PostVan(Van van)
         {
-            _context.vans.Add(van);
-            await _context.SaveChangesAsync();
+            _db.vans.Add(van);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetVan", new { id = van.vanId }, van);
         }
@@ -87,21 +87,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVan(int id)
         {
-            var van = await _context.vans.FindAsync(id);
+            var van = await _db.vans.FindAsync(id);
             if (van == null)
             {
                 return NotFound();
             }
 
-            _context.vans.Remove(van);
-            await _context.SaveChangesAsync();
+            _db.vans.Remove(van);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool VanExists(int id)
         {
-            return _context.vans.Any(e => e.vanId == id);
+            return _db.vans.Any(e => e.vanId == id);
         }
     }
 }

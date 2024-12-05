@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class DeliveryChargesController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public DeliveryChargesController(CourierDbContext context)
+        public DeliveryChargesController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/DeliveryCharges
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryCharge>>> GetDeliveryCharges()
         {
-            return await _context.DeliveryCharges.ToListAsync();
+            return await _db.DeliveryCharges.ToListAsync();
         }
 
         // GET: api/DeliveryCharges/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryCharge>> GetDeliveryCharge(int id)
         {
-            var deliveryCharge = await _context.DeliveryCharges.FindAsync(id);
+            var deliveryCharge = await _db.DeliveryCharges.FindAsync(id);
 
             if (deliveryCharge == null)
             {
@@ -51,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(deliveryCharge).State = EntityState.Modified;
+            _db.Entry(deliveryCharge).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +76,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<DeliveryCharge>> PostDeliveryCharge(DeliveryCharge deliveryCharge)
         {
-            _context.DeliveryCharges.Add(deliveryCharge);
-            await _context.SaveChangesAsync();
+            _db.DeliveryCharges.Add(deliveryCharge);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetDeliveryCharge", new { id = deliveryCharge.deliveryChargeId }, deliveryCharge);
         }
@@ -86,21 +86,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDeliveryCharge(int id)
         {
-            var deliveryCharge = await _context.DeliveryCharges.FindAsync(id);
+            var deliveryCharge = await _db.DeliveryCharges.FindAsync(id);
             if (deliveryCharge == null)
             {
                 return NotFound();
             }
 
-            _context.DeliveryCharges.Remove(deliveryCharge);
-            await _context.SaveChangesAsync();
+            _db.DeliveryCharges.Remove(deliveryCharge);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool DeliveryChargeExists(int id)
         {
-            return _context.DeliveryCharges.Any(e => e.deliveryChargeId == id);
+            return _db.DeliveryCharges.Any(e => e.deliveryChargeId == id);
         }
     }
 }

@@ -14,18 +14,18 @@ namespace CourierApi.Controllers
     [ApiController]
     public class BranchesController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public BranchesController(CourierDbContext context)
+        public BranchesController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
         // GET: api/Branches
         [HttpGet]
         public IActionResult GetBranches()
         {
             // Branches All ChildBranches loading
-            var branches = _context.Branches
+            var branches = _db.Branches
                                      .Include(b => b.ChildBranches)
                                      .ToList();
 
@@ -54,7 +54,7 @@ namespace CourierApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BranchDTO>> GetBranch(int id)
         {
-            var branch = await _context.Branches
+            var branch = await _db.Branches
                 .Include(b => b.ChildBranches) // Include Child branches
                 .FirstOrDefaultAsync(b => b.branchId == id);
 
@@ -90,15 +90,15 @@ namespace CourierApi.Controllers
             // Check if Parent exists if ParentId is provided
             if (branch.ParentId.HasValue)
             {
-                var parentBranch = await _context.Branches.FindAsync(branch.ParentId.Value);
+                var parentBranch = await _db.Branches.FindAsync(branch.ParentId.Value);
                 if (parentBranch == null)
                 {
                     return BadRequest("Invalid ParentId.");
                 }
             }
 
-            _context.Branches.Add(branch);
-            await _context.SaveChangesAsync();
+            _db.Branches.Add(branch);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetBranch", new { id = branch.branchId }, branch);
         }
@@ -115,18 +115,18 @@ namespace CourierApi.Controllers
             // Check if new Parent exists if ParentId is updated
             if (branch.ParentId.HasValue && branch.ParentId != id)
             {
-                var parentBranch = await _context.Branches.FindAsync(branch.ParentId.Value);
+                var parentBranch = await _db.Branches.FindAsync(branch.ParentId.Value);
                 if (parentBranch == null)
                 {
                     return BadRequest("Invalid ParentId.");
                 }
             }
 
-            _context.Entry(branch).State = EntityState.Modified;
+            _db.Entry(branch).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -147,7 +147,7 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBranch(int id)
         {
-            var branch = await _context.Branches
+            var branch = await _db.Branches
                 .Include(b => b.ChildBranches) // Load Child branches
                 .FirstOrDefaultAsync(b => b.branchId == id);
 
@@ -162,15 +162,15 @@ namespace CourierApi.Controllers
                 return BadRequest("Cannot delete a branch that has child branches.");
             }
 
-            _context.Branches.Remove(branch);
-            await _context.SaveChangesAsync();
+            _db.Branches.Remove(branch);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool BranchExists(int id)
         {
-            return _context.Branches.Any(e => e.branchId == id);
+            return _db.Branches.Any(e => e.branchId == id);
         }
     }
 }

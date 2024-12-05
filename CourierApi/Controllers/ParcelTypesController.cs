@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class ParcelTypesController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public ParcelTypesController(CourierDbContext context)
+        public ParcelTypesController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/ParcelTypes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ParcelType>>> GetParsersTypes()
         {
-            return await _context.ParsersTypes.ToListAsync();
+            return await _db.ParsersTypes.ToListAsync();
         }
 
         // GET: api/ParcelTypes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ParcelType>> GetParcelType(int id)
         {
-            var parcelType = await _context.ParsersTypes.FindAsync(id);
+            var parcelType = await _db.ParsersTypes.FindAsync(id);
 
             if (parcelType == null)
             {
@@ -51,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(parcelType).State = EntityState.Modified;
+            _db.Entry(parcelType).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +76,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ParcelType>> PostParcelType(ParcelType parcelType)
         {
-            _context.ParsersTypes.Add(parcelType);
-            await _context.SaveChangesAsync();
+            _db.ParsersTypes.Add(parcelType);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetParcelType", new { id = parcelType.parcelTypeId }, parcelType);
         }
@@ -86,21 +86,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParcelType(int id)
         {
-            var parcelType = await _context.ParsersTypes.FindAsync(id);
+            var parcelType = await _db.ParsersTypes.FindAsync(id);
             if (parcelType == null)
             {
                 return NotFound();
             }
 
-            _context.ParsersTypes.Remove(parcelType);
-            await _context.SaveChangesAsync();
+            _db.ParsersTypes.Remove(parcelType);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ParcelTypeExists(int id)
         {
-            return _context.ParsersTypes.Any(e => e.parcelTypeId == id);
+            return _db.ParsersTypes.Any(e => e.parcelTypeId == id);
         }
     }
 }

@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class ParcelsController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public ParcelsController(CourierDbContext context)
+        public ParcelsController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/Parcels
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Parcel>>> GetParsers()
         {
-            return await _context.Parsers.ToListAsync();
+            return await _db.Parsers.ToListAsync();
         }
 
         // GET: api/Parcels/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Parcel>> GetParcel(int id)
         {
-            var parcel = await _context.Parsers.FindAsync(id);
+            var parcel = await _db.Parsers.FindAsync(id);
 
             if (parcel == null)
             {
@@ -51,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(parcel).State = EntityState.Modified;
+            _db.Entry(parcel).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +76,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Parcel>> PostParcel(Parcel parcel)
         {
-            _context.Parsers.Add(parcel);
-            await _context.SaveChangesAsync();
+            _db.Parsers.Add(parcel);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetParcel", new { id = parcel.ParcelId }, parcel);
         }
@@ -86,21 +86,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParcel(int id)
         {
-            var parcel = await _context.Parsers.FindAsync(id);
+            var parcel = await _db.Parsers.FindAsync(id);
             if (parcel == null)
             {
                 return NotFound();
             }
 
-            _context.Parsers.Remove(parcel);
-            await _context.SaveChangesAsync();
+            _db.Parsers.Remove(parcel);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ParcelExists(int id)
         {
-            return _context.Parsers.Any(e => e.ParcelId == id);
+            return _db.Parsers.Any(e => e.ParcelId == id);
         }
     }
 }

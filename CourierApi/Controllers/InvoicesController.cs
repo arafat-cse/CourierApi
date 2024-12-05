@@ -14,25 +14,25 @@ namespace CourierApi.Controllers
     [ApiController]
     public class InvoicesController : ControllerBase
     {
-        private readonly CourierDbContext _context;
+        private readonly CourierDbContext _db;
 
-        public InvoicesController(CourierDbContext context)
+        public InvoicesController(CourierDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: api/Invoices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
-            return await _context.Invoices.ToListAsync();
+            return await _db.Invoices.ToListAsync();
         }
 
         // GET: api/Invoices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _db.Invoices.FindAsync(id);
 
             if (invoice == null)
             {
@@ -51,11 +51,11 @@ namespace CourierApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
+            _db.Entry(invoice).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +76,8 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            _context.Invoices.Add(invoice);
-            await _context.SaveChangesAsync();
+            _db.Invoices.Add(invoice);
+            await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetInvoice", new { id = invoice.invoiceId }, invoice);
         }
@@ -86,21 +86,21 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _db.Invoices.FindAsync(id);
             if (invoice == null)
             {
                 return NotFound();
             }
 
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
+            _db.Invoices.Remove(invoice);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool InvoiceExists(int id)
         {
-            return _context.Invoices.Any(e => e.invoiceId == id);
+            return _db.Invoices.Any(e => e.invoiceId == id);
         }
     }
 }
