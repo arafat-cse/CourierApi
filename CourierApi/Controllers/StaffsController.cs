@@ -162,16 +162,16 @@ namespace CourierApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Staffs
-        [HttpPost]
-        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
-        {
-            _db.Staffs.Add(staff);
-            await _db.SaveChangesAsync();
+        //// POST: api/Staffs
+        //[HttpPost]
+        //public async Task<ActionResult<Staff>> PostStaff(Staff staff)
+        //{
+        //    _db.Staffs.Add(staff);
+        //    await _db.SaveChangesAsync();
 
-            return CreatedAtAction("GetStaff", new { id = staff.staffId }, staff);
+        //    return CreatedAtAction("GetStaff", new { id = staff.staffId }, staff);
 
-        }
+        //}
 
         // DELETE: api/Staffs/5
         [HttpDelete("{id}")]
