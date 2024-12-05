@@ -106,8 +106,8 @@ namespace CourierApi.Controllers
                 _db.Staffs.Add(staff);
                 await _db.SaveChangesAsync();
 
-                cp.errorMessage = null; // No error since the operation is successful
-                cp.status = true; // Success status
+                cp.errorMessage = null; 
+                cp.status = true; 
                 cp.message = "New Staff Created successfully!";
                 cp.content = staff;
 
@@ -155,29 +155,15 @@ namespace CourierApi.Controllers
                     throw;
                 }
             }
-
-
             return Ok(new { Message = "New Staff updated successfully", staffId = id });
 
-            return NoContent();
         }
-
-        //// POST: api/Staffs
-        //[HttpPost]
-        //public async Task<ActionResult<Staff>> PostStaff(Staff staff)
-        //{
-        //    _db.Staffs.Add(staff);
-        //    await _db.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetStaff", new { id = staff.staffId }, staff);
-
-        //}
 
         // DELETE: api/Staffs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStaff(int id)
         {
-            CommanResponse de = new CommanResponse();
+           
 
             try
             {
@@ -187,11 +173,11 @@ namespace CourierApi.Controllers
                 if (staff == null)
                 {
                     // Staff is not found response
-                    de.errorMessage = "Staff is not found";
-                    de.status = false;
-                    de.message = "No Staff exists with the provided ID.";
-                    de.content = null;
-                    return NotFound(de);
+                    cp.errorMessage = "Staff is not found";
+                    cp.status = false;
+                    cp.message = "No Staff exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
                 }
 
                 // Remove the Staff and save changes
@@ -199,19 +185,19 @@ namespace CourierApi.Controllers
                 await _db.SaveChangesAsync();
 
                 // Populate success response
-                de.errorMessage = null;
-                de.status = true;
-                de.message = "Satff deleted successfully!";
-                de.content = staff;
-                return Ok(de);
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Satff deleted successfully!";
+                cp.content = staff;
+                return Ok(cp);
             }
             catch (Exception ex)
             {
-                de.errorMessage = ex.Message;
-                de.status = false;
-                de.message = "An error occurred while deleting the company.";
-                de.content = null;
-                return BadRequest(de);
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while deleting the company.";
+                cp.content = null;
+                return BadRequest(cp);
             }
         }
     }
