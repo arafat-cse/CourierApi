@@ -63,7 +63,6 @@ namespace CourierApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CommanResponse>> GetCompany(int id)
         {
-            CommanResponse cp = new CommanResponse();
 
             try
             {
