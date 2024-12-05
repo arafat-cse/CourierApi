@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CourierApi.Data;
 using CourierApi.Models;
 using NuGet.Protocol;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CourierApi.Controllers
 {
@@ -28,8 +29,6 @@ namespace CourierApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
         {
-            //return await _db.Staffs.ToListAsync();
-            
             try
             {
 
@@ -47,7 +46,7 @@ namespace CourierApi.Controllers
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Staff retrieved successfully!";
-                cp.content = staff.ToJson();
+                cp.content = staff;
 
                 return Ok(cp);
             }
@@ -62,30 +61,83 @@ namespace CourierApi.Controllers
             }
         }
 
-        // GET: api/Staffs/5
+        // 2. GET a staff by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
-            var staff = await _db.Staffs.FindAsync(id);
-
-            if (staff == null)
+            try
             {
-                return NotFound();
+                // Find the staff by ID
+                var staff = await _db.Staffs.FindAsync(id);
+
+                if (staff == null)
+                {
+                    cp.errorMessage = "staff not found";
+                    cp.status = false;
+                    cp.message = "No staff exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+
+                // Populate response for a successful retrieval
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "staff retrieved successfully!";
+                cp.content = staff;
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving any staff.";
+                cp.content = null;
+                return BadRequest(cp);
             }
 
-            return staff;
+        }
+        // 3. POST a New Staff
+        [HttpPost]
+        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
+        {
+            try
+            {
+                _db.Staffs.Add(staff);
+                await _db.SaveChangesAsync();
+
+                cp.errorMessage = null; // No error since the operation is successful
+                cp.status = true; // Success status
+                cp.message = "New Staff Created successfully!";
+                cp.content = staff;
+
+                // Returning the common response with CreatedAtAction
+                return CreatedAtAction(nameof(GetStaff), new { id = staff.staffId }, cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "Failed to Create a New Staff.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
 
         }
+        // 4. PUT Update a Staff
 
-        // PUT: api/Staffs/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStaff(int id, Staff staff)
         {
             if (id != staff.staffId)
             {
-                return BadRequest();
-            }
+                cp.errorMessage = "Badrequer ID mismatch";
+                cp.status = false;
+                cp.message = "staff not found";
+                cp.content = null;
+                return BadRequest(cp);
 
+            }
             _db.Entry(staff).State = EntityState.Modified;
 
             try
@@ -94,15 +146,18 @@ namespace CourierApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StaffExists(id))
+                if (!_db.Staffs.Any(c => c.staffId == id))
                 {
-                    return NotFound();
+                    return NotFound("Staff not found");
                 }
                 else
                 {
                     throw;
                 }
             }
+
+
+            return Ok(new { Message = "New Staff updated successfully", staffId = id });
 
             return NoContent();
         }
@@ -115,27 +170,49 @@ namespace CourierApi.Controllers
             await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetStaff", new { id = staff.staffId }, staff);
+
         }
 
         // DELETE: api/Staffs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStaff(int id)
         {
-            var staff = await _db.Staffs.FindAsync(id);
-            if (staff == null)
+            CommanResponse de = new CommanResponse();
+
+            try
             {
-                return NotFound();
+                // Find the staff by ID
+                var staff = await _db.Staffs.FindAsync(id);
+
+                if (staff == null)
+                {
+                    // Staff is not found response
+                    de.errorMessage = "Staff is not found";
+                    de.status = false;
+                    de.message = "No Staff exists with the provided ID.";
+                    de.content = null;
+                    return NotFound(de);
+                }
+
+                // Remove the Staff and save changes
+                _db.Staffs.Remove(staff);
+                await _db.SaveChangesAsync();
+
+                // Populate success response
+                de.errorMessage = null;
+                de.status = true;
+                de.message = "Satff deleted successfully!";
+                de.content = staff;
+                return Ok(de);
             }
-
-            _db.Staffs.Remove(staff);
-            await _db.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool StaffExists(int id)
-        {
-            return _db.Staffs.Any(e => e.staffId == id);
+            catch (Exception ex)
+            {
+                de.errorMessage = ex.Message;
+                de.status = false;
+                de.message = "An error occurred while deleting the company.";
+                de.content = null;
+                return BadRequest(de);
+            }
         }
     }
 }
