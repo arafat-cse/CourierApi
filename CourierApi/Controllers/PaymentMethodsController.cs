@@ -42,8 +42,7 @@ namespace CourierApi.Controllers
             return paymentMethod;
         }
 
-        // PUT: api/PaymentMethods/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/PaymentMethods/5       
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPaymentMethod(int id, PaymentMethod paymentMethod)
         {
@@ -74,7 +73,6 @@ namespace CourierApi.Controllers
         }
 
         // POST: api/PaymentMethods
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<PaymentMethod>> PostPaymentMethod(PaymentMethod paymentMethod)
         {

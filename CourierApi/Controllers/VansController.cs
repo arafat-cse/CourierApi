@@ -43,7 +43,6 @@ namespace CourierApi.Controllers
         }
 
         // PUT: api/Vans/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVan(int id, Van van)
         {
@@ -74,7 +73,6 @@ namespace CourierApi.Controllers
         }
 
         // POST: api/Vans
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Van>> PostVan(Van van)
         {
