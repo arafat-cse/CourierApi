@@ -2,6 +2,16 @@ using CourierApi.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+// Add services to the container
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Angular origin
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
 
 // Add services to the container.
 builder.Services.AddDbContext<CourierDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("AppCon")));
@@ -26,7 +36,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+// Configure the HTTP request pipeline
+app.UseCors("AllowAngularApp");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
