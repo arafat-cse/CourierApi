@@ -12,7 +12,7 @@ namespace CourierApi.Models
         public string? designation { get; set; }
         public string? createBy { get; set; }
         public DateTime? createDate { get; set; }
-        public DateTime updateBy { get; set; }
+        public DateTime? updateBy { get; set; }
         public DateTime? updateDate { get; set; }
         public bool IsActive { get; set; }
        
