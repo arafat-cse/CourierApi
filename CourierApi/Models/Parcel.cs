@@ -17,17 +17,7 @@ namespace CourierApi.Models
         public int ReceiverBranchId { get; set; }
         public virtual Branch? Branchs { get; set; }
         public DateTime EstimatedReceiveTime { get; set; }
-        public bool IsPaid { get; set; }
-        [ForeignKey("Van")]
-        public int? VanId { get; set; }
-        public virtual Van? Vans { get; set; }
-        public int? driverId { get; set; }
-        [ForeignKey("DeliveryCharge")]
-        public int? deliveryChargeId { get; set; }
-        public virtual DeliveryCharge? DeliveryCharges { get; set; }
-        [ForeignKey("ParcelType")]
-        public int? parcelTypeId { get; set; }
-        public virtual ParcelType? ParcelTypes { get; set; }
+        public bool IsPaid { get; set; }       
         public decimal price { get; set; }
         public decimal weight { get; set; }
         public string? createBy { get; set; }
@@ -40,6 +30,16 @@ namespace CourierApi.Models
         public bool recebingBranch { get; set; }
         public bool recebingReceber { get; set; }
         public bool IsActive { get; set; }
+        [ForeignKey("Van")]
+        public int? VanId { get; set; }
+        public virtual Van? Vans { get; set; }
+        public int? driverId { get; set; }
+        [ForeignKey("DeliveryCharge")]
+        public int? deliveryChargeId { get; set; }
+        public virtual DeliveryCharge? DeliveryCharges { get; set; }
+        [ForeignKey("ParcelType")]
+        public int? parcelTypeId { get; set; }
+        public virtual ParcelType? ParcelTypes { get; set; }
         public virtual ICollection<Invoice>? Invoices { get; set; }
     }
 }

@@ -8,16 +8,16 @@ namespace CourierApi.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int branchId { get; set; }
         public string? branchName { get; set; }
-        public string? address { get; set; }
-        [ForeignKey("Parent")]
-        public int? ParentId { get; set; } // Nullable for root branches
-        public virtual Branch? Parent { get; set; } // Navigation property for Parent
-        public virtual ICollection<Branch>? ChildBranches { get; set; } // Navigation property for Children
+        public string? address { get; set; }       
         public string? createBy { get; set; }
         public DateTime? createDate { get; set; }
         public string? updateBy { get; set; }
         public DateTime? updateDate { get; set; }
         public bool IsActive { get; set; }
+         [ForeignKey("Parent")]
+        public int? ParentId { get; set; } // Nullable for root branches
+        public virtual Branch? Parent { get; set; } // Navigation property for Parent
+        public virtual ICollection<Branch>? ChildBranches { get; set; } // Navigation property for Children
         public virtual ICollection<Parcel>? Parcels { get; set; }
     }
 }
