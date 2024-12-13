@@ -20,6 +20,7 @@ namespace CourierApi.Data
         public DbSet<ParcelType> ParsersTypes { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Van> vans { get; set; }
+        public DbSet<Designation> designations {  get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Branch>()

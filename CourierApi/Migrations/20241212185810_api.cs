@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourierApi.Migrations
 {
     /// <inheritdoc />
-    public partial class CourierApi : Migration
+    public partial class api : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,12 +19,12 @@ namespace CourierApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     branchName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -74,6 +74,19 @@ namespace CourierApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "designations",
+                columns: table => new
+                {
+                    designationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    designationName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_designations", x => x.designationId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ParsersTypes",
                 columns: table => new
                 {
@@ -110,26 +123,6 @@ namespace CourierApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Staffs",
-                columns: table => new
-                {
-                    staffId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    staffName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    designation = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updateBy = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Staffs", x => x.staffId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "vans",
                 columns: table => new
                 {
@@ -152,7 +145,6 @@ namespace CourierApi.Migrations
                 {
                     bankId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    companyId = table.Column<int>(type: "int", nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     accountNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     branchName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -160,7 +152,8 @@ namespace CourierApi.Migrations
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    companyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,19 +167,45 @@ namespace CourierApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Staffs",
+                columns: table => new
+                {
+                    staffId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    staffName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    createBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    createDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updateBy = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    designationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Staffs", x => x.staffId);
+                    table.ForeignKey(
+                        name: "FK_Staffs_designations_designationId",
+                        column: x => x.designationId,
+                        principalTable: "designations",
+                        principalColumn: "designationId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DeliveryCharges",
                 columns: table => new
                 {
                     deliveryChargeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    parcelTypeId = table.Column<int>(type: "int", nullable: false),
                     weight = table.Column<double>(type: "float", nullable: false),
                     price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    parcelTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -206,12 +225,12 @@ namespace CourierApi.Migrations
                     branchStaffId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     branchStaffName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    staffId = table.Column<int>(type: "int", nullable: false),
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    staffId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -240,10 +259,6 @@ namespace CourierApi.Migrations
                     BranchsbranchId = table.Column<int>(type: "int", nullable: true),
                     EstimatedReceiveTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsPaid = table.Column<bool>(type: "bit", nullable: false),
-                    VanId = table.Column<int>(type: "int", nullable: true),
-                    driverId = table.Column<int>(type: "int", nullable: true),
-                    deliveryChargeId = table.Column<int>(type: "int", nullable: true),
-                    parcelTypeId = table.Column<int>(type: "int", nullable: true),
                     price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     weight = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -255,7 +270,11 @@ namespace CourierApi.Migrations
                     recebingDistributin = table.Column<bool>(type: "bit", nullable: false),
                     recebingBranch = table.Column<bool>(type: "bit", nullable: false),
                     recebingReceber = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    VanId = table.Column<int>(type: "int", nullable: true),
+                    driverId = table.Column<int>(type: "int", nullable: true),
+                    deliveryChargeId = table.Column<int>(type: "int", nullable: true),
+                    parcelTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -291,14 +310,14 @@ namespace CourierApi.Migrations
                     paymentTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     particular = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    customerId = table.Column<int>(type: "int", nullable: false),
-                    paymentMethodId = table.Column<int>(type: "int", nullable: false),
-                    ParcelsId = table.Column<int>(type: "int", nullable: false),
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     updateDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    customerId = table.Column<int>(type: "int", nullable: false),
+                    paymentMethodId = table.Column<int>(type: "int", nullable: false),
+                    ParcelsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -377,6 +396,11 @@ namespace CourierApi.Migrations
                 name: "IX_Parsers_VanId",
                 table: "Parsers",
                 column: "VanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Staffs_designationId",
+                table: "Staffs",
+                column: "designationId");
         }
 
         /// <inheritdoc />
@@ -405,6 +429,9 @@ namespace CourierApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "PaymentMethods");
+
+            migrationBuilder.DropTable(
+                name: "designations");
 
             migrationBuilder.DropTable(
                 name: "Branches");

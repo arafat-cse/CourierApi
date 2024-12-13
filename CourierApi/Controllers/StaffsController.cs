@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourierApi.Data;
 using CourierApi.Models;
-using NuGet.Protocol;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CourierApi.Controllers
 {
@@ -16,189 +14,110 @@ namespace CourierApi.Controllers
     [ApiController]
     public class StaffsController : ControllerBase
     {
-        private readonly CourierDbContext _db;
+        private readonly CourierDbContext _context;
 
-        public StaffsController(CourierDbContext db)
+        public StaffsController(CourierDbContext context)
         {
-            _db = db;
+            _context = context;
         }
-        //CommanResponse
-        CommanResponse cp = new CommanResponse();
 
-        // GET: All Staffs
+        // GET: api/Staffs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
         {
-            try
-            {
-
-                var staff = await _db.Staffs.ToListAsync();
-                if (staff == null || !staff.Any())
-                {
-                    cp.errorMessage = null;
-                    cp.status = true;
-                    cp.message = "No staff found.";
-                    cp.content = null;
-                    return Ok(cp);
-                }
-
-                // Populate response for a successful find
-                cp.errorMessage = null;
-                cp.status = true;
-                cp.message = "Staff retrieved successfully!";
-                cp.content = staff;
-
-                return Ok(cp);
-            }
-            catch (Exception ex)
-            {
-                cp.errorMessage = ex.Message;
-                cp.status = false;
-                cp.message = "An error occurred while any retrieving the staff.";
-                cp.content = null;
-
-                return BadRequest(cp);
-            }
+            return await _context.Staffs.Include(d=>d.Designation).ToListAsync();
         }
 
-        // 2. GET a staff by ID
+        //// GET: api/Staffs/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Staff>> GetStaff(int id)
+        //{
+        //    var staff = await _context.Staffs.FindAsync(id);
+
+        //    if (staff == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return staff;
+        //}
+
+        // GET: api/Staffs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
-            try
-            {
-                // Find the staff by ID
-                var staff = await _db.Staffs.FindAsync(id);
+            var staff = await _context.Staffs
+                .Include(s => s.Designation)
+                .FirstOrDefaultAsync(s => s.staffId == id);
 
-                if (staff == null)
-                {
-                    cp.errorMessage = "staff not found";
-                    cp.status = false;
-                    cp.message = "No staff exists with the provided ID.";
-                    cp.content = null;
-                    return NotFound(cp);
-                }
-
-                // Populate response for a successful retrieval
-                cp.errorMessage = null;
-                cp.status = true;
-                cp.message = "staff retrieved successfully!";
-                cp.content = staff;
-                return Ok(cp);
-            }
-            catch (Exception ex)
+            if (staff == null)
             {
-                // Handle exceptions
-                cp.errorMessage = ex.Message;
-                cp.status = false;
-                cp.message = "An error occurred while retrieving any staff.";
-                cp.content = null;
-                return BadRequest(cp);
+                return NotFound();
             }
 
+            return staff;
         }
-        // 3. POST a New Staff
-        [HttpPost]
-        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
-        {
-            try
-            {
-                _db.Staffs.Add(staff);
-                await _db.SaveChangesAsync();
 
-                cp.errorMessage = null; 
-                cp.status = true; 
-                cp.message = "New Staff Created successfully!";
-                cp.content = staff;
 
-                // Returning the common response with CreatedAtAction
-                return CreatedAtAction(nameof(GetStaff), new { id = staff.staffId }, cp);
-            }
-            catch (Exception ex)
-            {
-                cp.errorMessage = ex.Message;
-                cp.status = false;
-                cp.message = "Failed to Create a New Staff.";
-                cp.content = null;
-                return BadRequest(cp);
-            }
-
-        }
-        // 4. PUT Update a Staff
-
+        // PUT: api/Staffs/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStaff(int id, Staff staff)
         {
             if (id != staff.staffId)
             {
-                cp.errorMessage = "Badrequer ID mismatch";
-                cp.status = false;
-                cp.message = "staff not found";
-                cp.content = null;
-                return BadRequest(cp);
-
+                return BadRequest();
             }
-            _db.Entry(staff).State = EntityState.Modified;
+
+            _context.Entry(staff).State = EntityState.Modified;
 
             try
             {
-                await _db.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_db.Staffs.Any(c => c.staffId == id))
+                if (!StaffExists(id))
                 {
-                    return NotFound("Staff not found");
+                    return NotFound();
                 }
                 else
                 {
                     throw;
                 }
             }
-            return Ok(new { Message = "New Staff updated successfully", staffId = id });
 
+            return NoContent();
+        }
+
+        // POST: api/Staffs
+        [HttpPost]
+        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
+        {
+            _context.Staffs.Add(staff);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetStaff", new { id = staff.staffId }, staff);
         }
 
         // DELETE: api/Staffs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStaff(int id)
         {
-           
-
-            try
+            var staff = await _context.Staffs.FindAsync(id);
+            if (staff == null)
             {
-                // Find the staff by ID
-                var staff = await _db.Staffs.FindAsync(id);
-
-                if (staff == null)
-                {
-                    // Staff is not found response
-                    cp.errorMessage = "Staff is not found";
-                    cp.status = false;
-                    cp.message = "No Staff exists with the provided ID.";
-                    cp.content = null;
-                    return NotFound(cp);
-                }
-
-                // Remove the Staff and save changes
-                _db.Staffs.Remove(staff);
-                await _db.SaveChangesAsync();
-
-                // Populate success response
-                cp.errorMessage = null;
-                cp.status = true;
-                cp.message = "Satff deleted successfully!";
-                cp.content = staff;
-                return Ok(cp);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                cp.errorMessage = ex.Message;
-                cp.status = false;
-                cp.message = "An error occurred while deleting the company.";
-                cp.content = null;
-                return BadRequest(cp);
-            }
+
+            _context.Staffs.Remove(staff);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool StaffExists(int id)
+        {
+            return _context.Staffs.Any(e => e.staffId == id);
         }
     }
 }
