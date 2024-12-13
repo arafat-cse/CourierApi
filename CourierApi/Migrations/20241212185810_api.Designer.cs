@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourierApi.Migrations
 {
     [DbContext(typeof(CourierDbContext))]
-    [Migration("20241203192159_CourierApi")]
-    partial class CourierApi
+    [Migration("20241212185810_api")]
+    partial class api
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -244,6 +244,23 @@ namespace CourierApi.Migrations
                     b.ToTable("DeliveryCharges");
                 });
 
+            modelBuilder.Entity("CourierApi.Models.Designation", b =>
+                {
+                    b.Property<int>("designationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("designationId"));
+
+                    b.Property<string>("designationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("designationId");
+
+                    b.ToTable("designations");
+                });
+
             modelBuilder.Entity("CourierApi.Models.Invoice", b =>
                 {
                     b.Property<int>("invoiceId")
@@ -469,13 +486,14 @@ namespace CourierApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("createBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("createDate")
+                    b.Property<DateTime>("createDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("designation")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("designationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("email")
                         .HasColumnType("nvarchar(max)");
@@ -483,13 +501,15 @@ namespace CourierApi.Migrations
                     b.Property<string>("staffName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("updateBy")
+                    b.Property<DateTime?>("updateBy")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("updateDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("staffId");
+
+                    b.HasIndex("designationId");
 
                     b.ToTable("Staffs");
                 });
@@ -619,6 +639,17 @@ namespace CourierApi.Migrations
                     b.Navigation("Vans");
                 });
 
+            modelBuilder.Entity("CourierApi.Models.Staff", b =>
+                {
+                    b.HasOne("CourierApi.Models.Designation", "Designation")
+                        .WithMany("Staffs")
+                        .HasForeignKey("designationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Designation");
+                });
+
             modelBuilder.Entity("CourierApi.Models.Branch", b =>
                 {
                     b.Navigation("ChildBranches");
@@ -639,6 +670,11 @@ namespace CourierApi.Migrations
             modelBuilder.Entity("CourierApi.Models.DeliveryCharge", b =>
                 {
                     b.Navigation("Parcels");
+                });
+
+            modelBuilder.Entity("CourierApi.Models.Designation", b =>
+                {
+                    b.Navigation("Staffs");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Parcel", b =>

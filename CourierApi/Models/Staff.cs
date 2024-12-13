@@ -11,11 +11,11 @@ namespace CourierApi.Models
         public string? email { get; set; }       
         public string createBy { get; set; }
         public DateTime createDate { get; set; }
-        public DateTime? updateBy { get; set; }
+        public string? updateBy { get; set; }
         public DateTime? updateDate { get; set; }
         public bool IsActive { get; set; }
         [ForeignKey("Designation")]
-        public string? designationId { get; set; }
+        public int designationId { get; set; }
         public virtual Designation Designation { get; set; }
 
     }

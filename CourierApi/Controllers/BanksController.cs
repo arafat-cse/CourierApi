@@ -25,7 +25,8 @@ namespace CourierApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBanks()
         {
-            return await _db.Banks.ToListAsync();
+            //return await _db.Banks.ToListAsync();
+            return await _db.Banks.Include(b => b.Companys).ToListAsync();
         }
 
         // GET: For Id
