@@ -18,5 +18,6 @@ namespace CourierApi.Models
         public int designationId { get; set; }
         public virtual Designation Designation { get; set; }
 
+
     }
 }
