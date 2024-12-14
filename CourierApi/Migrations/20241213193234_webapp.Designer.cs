@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourierApi.Migrations
 {
     [DbContext(typeof(CourierDbContext))]
-    [Migration("20241212185810_api")]
-    partial class api
+    [Migration("20241213193234_webapp")]
+    partial class webapp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,7 +252,7 @@ namespace CourierApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("designationId"));
 
-                    b.Property<string>("designationName")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -501,8 +501,8 @@ namespace CourierApi.Migrations
                     b.Property<string>("staffName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("updateBy")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("updateBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updateDate")
                         .HasColumnType("datetime2");
