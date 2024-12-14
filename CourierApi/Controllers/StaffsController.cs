@@ -28,19 +28,6 @@ namespace CourierApi.Controllers
             return await _context.Staffs.Include(d=>d.Designation).ToListAsync();
         }
 
-        //// GET: api/Staffs/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Staff>> GetStaff(int id)
-        //{
-        //    var staff = await _context.Staffs.FindAsync(id);
-
-        //    if (staff == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return staff;
-        //}
 
         // GET: api/Staffs/5
         [HttpGet("{id}")]
