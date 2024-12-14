@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourierApi.Migrations
 {
     [DbContext(typeof(CourierDbContext))]
-    [Migration("20241213193234_webapp")]
-    partial class webapp
+    [Migration("20241214181900_webapi")]
+    partial class webapi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,9 +252,28 @@ namespace CourierApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("designationId"));
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SalaryRange")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("createBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("createDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("updateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("updateDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("designationId");
 
