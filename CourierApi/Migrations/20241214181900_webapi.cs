@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourierApi.Migrations
 {
     /// <inheritdoc />
-    public partial class webapp : Migration
+    public partial class webapi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,7 +79,13 @@ namespace CourierApi.Migrations
                 {
                     designationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SalaryRange = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    createBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    createDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    updateDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

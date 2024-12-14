@@ -20,12 +20,14 @@ namespace CourierApi.Controllers
         {
             _db = db;
         }
+
         // GET: api/Designations
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Designation>>> Getdesignations()
         {
             return await _db.designations.ToListAsync();
         }
+
         // GET: api/Designations/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Designation>> GetDesignation(int id)
@@ -39,6 +41,7 @@ namespace CourierApi.Controllers
 
             return designation;
         }
+
         // PUT: api/Designations/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDesignation(int id, Designation designation)
@@ -68,6 +71,7 @@ namespace CourierApi.Controllers
 
             return NoContent();
         }
+
         // POST: api/Designations
         [HttpPost]
         public async Task<ActionResult<Designation>> PostDesignation(Designation designation)
@@ -77,6 +81,7 @@ namespace CourierApi.Controllers
 
             return CreatedAtAction("GetDesignation", new { id = designation.designationId }, designation);
         }
+
         // DELETE: api/Designations/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDesignation(int id)
@@ -92,6 +97,7 @@ namespace CourierApi.Controllers
 
             return NoContent();
         }
+
         private bool DesignationExists(int id)
         {
             return _db.designations.Any(e => e.designationId == id);
