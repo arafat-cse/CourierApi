@@ -28,6 +28,18 @@ namespace CourierApi.Data
                 .WithMany(b => b.ChildBranches)
                 .HasForeignKey(b => b.ParentId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+            //staff
+            modelBuilder.Entity<Staff>()
+              .HasOne(s => s.Designation)
+              .WithMany(d => d.Staffs)
+              .HasForeignKey(s => s.designationId)
+              .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+            //bank
+            modelBuilder.Entity<Bank>()
+               .HasOne(s => s.Company)
+              .WithMany(d => d.Banks)
+              .HasForeignKey(s => s.companyId)
+              .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
 
             //modelBuilder.Entity<Branch>()
             //    .HasOne(b => b.Parent) // Parent সম্পর্ক
@@ -35,10 +47,18 @@ namespace CourierApi.Data
             //    .HasForeignKey(b => b.ParentId)
             //    .OnDelete(DeleteBehavior.Restrict); // Restrict delete to prevent cascade delete
         }
-      /*  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseLazyLoadingProxies(false);
-        }*/
+        /*  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+          {
+              optionsBuilder.UseLazyLoadingProxies(false);
+          }*/
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<Staff>()
+        //        .HasOne(s => s.Designation)
+        //        .WithMany(d => d.Staffs)
+        //        .HasForeignKey(s => s.designationId)
+        //        .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+        //}
 
     }
 
