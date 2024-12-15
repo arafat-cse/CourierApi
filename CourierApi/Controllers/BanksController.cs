@@ -20,89 +20,173 @@ namespace CourierApi.Controllers
         {
             _db = db;
         }
-
-        // GET: 
+        //CommanResponse
+        CommanResponse cp = new CommanResponse();
+        // GET: api/Banks
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBanks()
         {
-            //return await _db.Banks.ToListAsync();
-            return await _db.Banks.Include(b => b.Companys).ToListAsync();
+           return await _db.Banks.Include(b => b.Company).ToListAsync();
+            //try
+            //{
+            //    var banks = await _db.Banks.Include(b => b.Company).ToListAsync();
+            //    if (banks == null || !banks.Any())
+            //    {
+            //        cp.errorMessage = "No banks found.";
+            //        cp.status = false;
+            //        cp.message = "No bank data available.";
+            //        cp.content = null;
+            //        return Ok(cp);
+            //    }
+
+            //    cp.errorMessage = null;
+            //    cp.status = true;
+            //    cp.message = "Banks retrieved successfully!";
+            //    cp.content = banks;
+
+            //    return Ok(cp);
+            //}
+            //catch (Exception ex)
+            //{
+            //    cp.errorMessage = ex.Message;
+            //    cp.status = false;
+            //    cp.message = "An error occurred while retrieving the banks.";
+            //    cp.content = null;
+
+            //    return BadRequest(cp);
+            //}
         }
 
-        // GET: For Id
+        // GET: api/Banks/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Bank>> GetBank(int id)
         {
-            var bank = await _db.Banks.FindAsync(id);
-
-            if (bank == null)
+            try
             {
-                return NotFound();
-            }
+                var bank = await _db.Banks.Include(b => b.Company).FirstOrDefaultAsync(b => b.bankId == id);
 
-            return bank;
+                if (bank == null)
+                {
+                    cp.errorMessage = "Bank not found.";
+                    cp.status = false;
+                    cp.message = "No bank exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Bank retrieved successfully!";
+                cp.content = bank;
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the bank.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
-        // PUT: For Id
+        // PUT: api/Banks/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBank(int id, Bank bank)
         {
             if (id != bank.bankId)
             {
-                return BadRequest();
+                cp.errorMessage = "Invalid bank ID.";
+                cp.status = false;
+                cp.message = "Bank ID mismatch.";
+                cp.content = null;
+                return BadRequest(cp);
             }
 
-            _db.Entry(bank).State = EntityState.Modified;
+            var existingBank = await _db.Banks.FindAsync(id);
+            if (existingBank == null)
+            {
+                cp.errorMessage = "Bank not found.";
+                cp.status = false;
+                cp.message = "No bank exists with the provided ID.";
+                cp.content = null;
+                return NotFound(cp);
+            }
+
+            existingBank.branchName = bank.branchName;
+            existingBank.updateBy = bank.updateBy;
+            existingBank.updateDate = DateTime.UtcNow;
+            existingBank.companyId = bank.companyId;
 
             try
             {
                 await _db.SaveChangesAsync();
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Bank updated successfully!";
+                cp.content = null; // Optional
+                return Ok(cp);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!BankExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while updating the bank.";
+                cp.content = null;
+                return BadRequest(cp);
             }
-
-            return Ok(new { Message = "Bank Update successfully", bankId = id });
         }
 
-        // POST: 
+        // POST: api/Banks
         [HttpPost]
         public async Task<ActionResult<Bank>> PostBank(Bank bank)
         {
-            _db.Banks.Add(bank);
-            await _db.SaveChangesAsync();
+            try
+            {
+                _db.Banks.Add(bank);
+                await _db.SaveChangesAsync();
 
-            return CreatedAtAction("GetBank", new { id = bank.bankId }, bank);
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "New bank created successfully!";
+                cp.content = bank;
+
+                return CreatedAtAction(nameof(GetBank), new { id = bank.bankId }, cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "Failed to create a new bank.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
-        // DELETE: For Id
+        // DELETE: api/Banks/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBank(int id)
         {
             var bank = await _db.Banks.FindAsync(id);
             if (bank == null)
             {
-                return NotFound();
+                cp.errorMessage = "Bank not found.";
+                cp.status = false;
+                cp.message = "No bank exists with the provided ID.";
+                cp.content = null;
+                return NotFound(cp);
             }
 
             _db.Banks.Remove(bank);
             await _db.SaveChangesAsync();
 
-            return Ok(new { Message = "Bank Delete successfully", bankId = id });
+            cp.errorMessage = null;
+            cp.status = true;
+            cp.message = "Bank deleted successfully!";
+            cp.content = null;
 
+            return Ok(cp);
         }
 
-        private bool BankExists(int id)
-        {
-            return _db.Banks.Any(e => e.bankId == id);
-        }
     }
 }

@@ -8,9 +8,9 @@ namespace CourierApi.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int companyId { get; set; }
         [Required, Display(Name = "Company Name")]
-        public string? companyName { get; set; }
-        public string? createBy { get; set; }
-        public string? createDate { get; set; }
+        public string companyName { get; set; }
+        public string createBy { get; set; }
+        public DateTime createDate { get; set; }
         public virtual ICollection<Bank>? Banks { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace CourierApi.Models
         public bool IsActive { get; set; }
         [ForeignKey("Designation")]
         public int designationId { get; set; }
-        public virtual Designation Designation { get; set; }
+        public virtual Designation? Designation { get; set; }
 
 
     }
