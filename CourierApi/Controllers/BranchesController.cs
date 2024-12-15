@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourierApi.Data;
 using CourierApi.Models;
-
 namespace CourierApi.Controllers
 {
     [Route("api/[controller]")]
@@ -139,7 +138,6 @@ namespace CourierApi.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
