@@ -7,20 +7,19 @@ namespace CourierApi.Models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int parcelId { get; set; }
-        public string? parcelCode { get; set; }
+        public string parcelCode { get; set; }
         public int senderCustomerId { get; set; }
         public int receiverCustomerId { get; set; }
-        public DateTime sendTime { get; set; }
-        public DateTime receiveTime { get; set; }
+        public DateTime? sendTime { get; set; }
+        public DateTime? receiveTime { get; set; }
         public int senderBranchId { get; set; }
         public DateTime estimatedReceiveTime { get; set; }
         public bool IsPaid { get; set; }       
         public decimal price { get; set; }
-        public decimal weight { get; set; }
         public string createBy { get; set; }
-        public DateTime createDate { get; set; }
+        public DateTime? createDate { get; set; }
         public string? updateBy { get; set; }
-        public DateTime updateDate { get; set; }
+        public DateTime? updateDate { get; set; }
         public bool sendingBranch { get; set; }
         public bool percelSendingDestribution { get; set; }
         public bool recebingDistributin { get; set; }
