@@ -46,7 +46,7 @@ namespace CourierApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutParcel(int id, Parcel parcel)
         {
-            if (id != parcel.ParcelId)
+            if (id != parcel.parcelId)
             {
                 return BadRequest();
             }
@@ -79,7 +79,7 @@ namespace CourierApi.Controllers
             _db.Parsers.Add(parcel);
             await _db.SaveChangesAsync();
 
-            return CreatedAtAction("GetParcel", new { id = parcel.ParcelId }, parcel);
+            return CreatedAtAction("GetParcel", new { id = parcel.parcelId }, parcel);
         }
 
         // DELETE: api/Parcels/5
@@ -100,7 +100,7 @@ namespace CourierApi.Controllers
 
         private bool ParcelExists(int id)
         {
-            return _db.Parsers.Any(e => e.ParcelId == id);
+            return _db.Parsers.Any(e => e.parcelId == id);
         }
     }
 }

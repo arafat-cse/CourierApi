@@ -9,7 +9,7 @@ namespace CourierApi.Models
         public int deliveryChargeId { get; set; }
         public double weight { get; set; }
         public decimal price { get; set; }
-        public string? createBy { get; set; }
+        public string createBy { get; set; }
         public DateTime createDate { get; set; }
         public string? updateBy { get; set; }
         public DateTime? updateDate { get; set; }

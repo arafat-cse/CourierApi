@@ -26,35 +26,35 @@ namespace CourierApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBanks()
         {
-           return await _db.Banks.Include(b => b.Company).ToListAsync();
-            //try
-            //{
-            //    var banks = await _db.Banks.Include(b => b.Company).ToListAsync();
-            //    if (banks == null || !banks.Any())
-            //    {
-            //        cp.errorMessage = "No banks found.";
-            //        cp.status = false;
-            //        cp.message = "No bank data available.";
-            //        cp.content = null;
-            //        return Ok(cp);
-            //    }
 
-            //    cp.errorMessage = null;
-            //    cp.status = true;
-            //    cp.message = "Banks retrieved successfully!";
-            //    cp.content = banks;
+            try
+            {
+                var banks = await _db.Banks.Include(b => b.Company).ToListAsync();
+                if (banks == null || !banks.Any())
+                {
+                    cp.errorMessage = "No banks found.";
+                    cp.status = false;
+                    cp.message = "No bank data available.";
+                    cp.content = null;
+                    return Ok(cp);
+                }
 
-            //    return Ok(cp);
-            //}
-            //catch (Exception ex)
-            //{
-            //    cp.errorMessage = ex.Message;
-            //    cp.status = false;
-            //    cp.message = "An error occurred while retrieving the banks.";
-            //    cp.content = null;
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Banks retrieved successfully!";
+                cp.content = banks;
 
-            //    return BadRequest(cp);
-            //}
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the banks.";
+                cp.content = null;
+
+                return BadRequest(cp);
+            }
         }
 
         // GET: api/Banks/{id}
