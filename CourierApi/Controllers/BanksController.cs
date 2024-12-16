@@ -145,7 +145,7 @@ namespace CourierApi.Controllers
             {
                 _db.Banks.Add(bank);
                 await _db.SaveChangesAsync();
-
+             
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "New bank created successfully!";
