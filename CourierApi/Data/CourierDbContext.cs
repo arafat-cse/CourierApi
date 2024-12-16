@@ -92,11 +92,7 @@ namespace CourierApi.Data
 
 
 
-            //modelBuilder.Entity<Branch>()
-            //    .HasOne(b => b.Parent) // Parent সম্পর্ক
-            //    .WithMany(b => b.ChildBranches) // ChildBranches সম্পর্ক
-            //    .HasForeignKey(b => b.ParentId)
-            //    .OnDelete(DeleteBehavior.Restrict); // Restrict delete to prevent cascade delete
+           
         }
         /*  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
           {
