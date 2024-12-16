@@ -40,6 +40,57 @@ namespace CourierApi.Data
               .WithMany(d => d.Banks)
               .HasForeignKey(s => s.companyId)
               .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+            //Invoice
+            modelBuilder.Entity<Invoice>()
+               .HasOne(s => s.Customers)
+              .WithMany(d => d.Invoices)
+              .HasForeignKey(s => s.customerId)
+              .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+                                                  //Invoice
+            modelBuilder.Entity<Invoice>()
+               .HasOne(s => s.PaymentMethods)
+              .WithMany(d => d.Invoices)
+              .HasForeignKey(s => s.paymentMethodId)
+              .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+
+            modelBuilder.Entity<Invoice>()
+              .HasOne(s => s.Parcels)
+             .WithMany(d => d.Invoices)
+             .HasForeignKey(s => s.ParcelsId)
+             .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+
+            //Parcel
+            modelBuilder.Entity<Parcel>()
+               .HasOne(s => s.Branchs)
+              .WithMany(d => d.Parcels)
+              .HasForeignKey(s => s.receiverBranchId)
+              .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+
+            modelBuilder.Entity<Parcel>()
+              .HasOne(s => s.Vans)
+             .WithMany(d => d.Parcels)
+             .HasForeignKey(s => s.VanId)
+             .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+
+            modelBuilder.Entity<Parcel>()
+              .HasOne(s => s.ParcelTypes)
+             .WithMany(d => d.Parcels)
+             .HasForeignKey(s => s.parcelTypeId)
+             .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+
+            modelBuilder.Entity<Parcel>()
+             .HasOne(s => s.DeliveryCharges)
+            .WithMany(d => d.Parcels)
+            .HasForeignKey(s => s.deliveryChargeId)
+            .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+            //DeliveryCharge
+            modelBuilder.Entity<DeliveryCharge>()
+            .HasOne(s => s.ParcelTypes)
+           .WithMany(d => d.DeliveryCharges)
+           .HasForeignKey(s => s.parcelTypeId)
+           .OnDelete(DeleteBehavior.Restrict); // Optional: Prevent cascade delete
+
+
 
             //modelBuilder.Entity<Branch>()
             //    .HasOne(b => b.Parent) // Parent সম্পর্ক
