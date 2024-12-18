@@ -23,15 +23,16 @@ namespace CourierApi.Controllers
 
         // GET: api/Parcels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Parcel>>> GetParcels()
+        public async Task<IActionResult> GetParcels()
         {
             try
             {
-                var parcels = await _db.Parsers
-                    .Include(p => p.Branchs)
-                    .Include(p => p.ParcelTypes)
-                    .Include(p => p.DeliveryCharges)
-                    .Include(p => p.Vans)
+                var parcels = await _db.Parcels
+                    .Include(p => p.SenderBranch)
+                    .Include(p => p.ReceiverBranch)
+                    .Include(p => p.ParcelType)
+                    .Include(p => p.DeliveryCharge)
+                    .Include(p => p.Van)
                     .ToListAsync();
 
                 if (!parcels.Any())
@@ -52,22 +53,22 @@ namespace CourierApi.Controllers
                 cp.status = false;
                 cp.message = "Error occurred while retrieving parcels.";
                 cp.errorMessage = ex.Message;
-                cp.content = null;
                 return StatusCode(500, cp);
             }
         }
 
         // GET: api/Parcels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Parcel>> GetParcel(int id)
+        public async Task<IActionResult> GetParcel(int id)
         {
             try
             {
-                var parcel = await _db.Parsers
-                    .Include(p => p.Branchs)
-                    .Include(p => p.ParcelTypes)
-                    .Include(p => p.DeliveryCharges)
-                    .Include(p => p.Vans)
+                var parcel = await _db.Parcels
+                    .Include(p => p.SenderBranch)
+                    .Include(p => p.ReceiverBranch)
+                    .Include(p => p.ParcelType)
+                    .Include(p => p.DeliveryCharge)
+                    .Include(p => p.Van)
                     .FirstOrDefaultAsync(p => p.parcelId == id);
 
                 if (parcel == null)
@@ -88,8 +89,48 @@ namespace CourierApi.Controllers
                 cp.status = false;
                 cp.message = "Error occurred while retrieving the parcel.";
                 cp.errorMessage = ex.Message;
-                cp.content = null;
                 return StatusCode(500, cp);
+            }
+        }
+
+        // POST: api/Parcels
+        [HttpPost]
+        public async Task<IActionResult> PostParcel(Parcel parcel)
+        {
+            try
+            {
+                // Validate dependencies
+                var isValidSenderBranch = await _db.Branches.AnyAsync(d => d.branchId == parcel.senderBranchId);
+                var isValidReceiverBranch = await _db.Branches.AnyAsync(d => d.branchId == parcel.receiverBranchId);
+                var isValidParcelType = await _db.ParcelTypes.AnyAsync(d => d.parcelTypeId == parcel.parcelTypeId);
+                var isValidDeliveryCharge = await _db.DeliveryCharges.AnyAsync(d => d.deliveryChargeId == parcel.deliveryChargeId);
+                var isValidVan = parcel.vanId == null || await _db.Vans.AnyAsync(d => d.vanId == parcel.vanId);
+
+                if (!isValidSenderBranch || isValidReceiverBranch || !isValidParcelType || !isValidDeliveryCharge || !isValidVan)
+                {
+                    cp.errorMessage = "Invalid dependencies.";
+                    cp.status = false;
+                    cp.message = "One or more dependencies are invalid.";
+                    cp.content = null;
+                    return BadRequest(cp);
+                }
+
+                // Add new parcel
+                _db.Parcels.Add(parcel);
+                await _db.SaveChangesAsync();
+
+                cp.status = true;
+                cp.message = "Parcel created successfully.";
+                cp.content = parcel;
+                return CreatedAtAction(nameof(GetParcel), new { id = parcel.parcelId }, cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "Failed to create a new Parcel.";
+                cp.content = null;
+                return BadRequest(cp);
             }
         }
 
@@ -104,12 +145,15 @@ namespace CourierApi.Controllers
 
             try
             {
-                var existingParcel = await _db.Parsers.FindAsync(id);
+                var existingParcel = await _db.Parcels.FindAsync(id);
                 if (existingParcel == null)
                 {
-                    return NotFound("Parcel not found.");
+                    cp.status = false;
+                    cp.message = "Parcel not found.";
+                    return NotFound(cp);
                 }
 
+                // Update fields
                 existingParcel.parcelCode = parcel.parcelCode;
                 existingParcel.senderCustomerId = parcel.senderCustomerId;
                 existingParcel.receiverCustomerId = parcel.receiverCustomerId;
@@ -120,13 +164,18 @@ namespace CourierApi.Controllers
                 _db.Entry(existingParcel).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
 
-                return NoContent();
+                cp.status = true;
+                cp.message = "Parcel updated successfully.";
+                cp.content = existingParcel;
+                return Ok(cp);
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ParcelExists(id))
                 {
-                    return NotFound("Parcel not found.");
+                    cp.status = false;
+                    cp.message = "Parcel not found.";
+                    return NotFound(cp);
                 }
                 else
                 {
@@ -142,38 +191,13 @@ namespace CourierApi.Controllers
             }
         }
 
-        // POST: api/Parcels
-        [HttpPost]
-        public async Task<ActionResult<Parcel>> PostParcel(Parcel parcel)
-        {
-            try
-            {
-                parcel.createDate = DateTime.UtcNow;
-                parcel.IsActive = true;
-                _db.Parsers.Add(parcel);
-                await _db.SaveChangesAsync();
-
-                cp.status = true;
-                cp.message = "Parcel created successfully.";
-                cp.content = parcel;
-                return CreatedAtAction(nameof(GetParcel), new { id = parcel.parcelId }, cp);
-            }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Error occurred while creating the parcel.";
-                cp.errorMessage = ex.Message;
-                return BadRequest(cp);
-            }
-        }
-
         // DELETE: api/Parcels/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParcel(int id)
         {
             try
             {
-                var parcel = await _db.Parsers.FindAsync(id);
+                var parcel = await _db.Parcels.FindAsync(id);
                 if (parcel == null)
                 {
                     cp.status = false;
@@ -181,7 +205,7 @@ namespace CourierApi.Controllers
                     return NotFound(cp);
                 }
 
-                _db.Parsers.Remove(parcel);
+                _db.Parcels.Remove(parcel);
                 await _db.SaveChangesAsync();
 
                 cp.status = true;
@@ -199,7 +223,7 @@ namespace CourierApi.Controllers
 
         private bool ParcelExists(int id)
         {
-            return _db.Parsers.Any(p => p.parcelId == id);
+            return _db.Parcels.Any(p => p.parcelId == id);
         }
     }
 }

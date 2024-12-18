@@ -23,16 +23,16 @@ namespace CourierApi.Controllers
 
         // GET: api/Designations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Designation>>> Getdesignations()
+        public async Task<ActionResult<IEnumerable<Designation>>> GetDesignations()
         {
-            return await _db.designations.ToListAsync();
+            return await _db.Designations.ToListAsync();
         }
 
         // GET: api/Designations/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Designation>> GetDesignation(int id)
         {
-            var designation = await _db.designations.FindAsync(id);
+            var designation = await _db.Designations.FindAsync(id);
 
             if (designation == null)
             {
@@ -76,7 +76,7 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Designation>> PostDesignation(Designation designation)
         {
-            _db.designations.Add(designation);
+            _db.Designations.Add(designation);
             await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetDesignation", new { id = designation.designationId }, designation);
@@ -86,13 +86,13 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDesignation(int id)
         {
-            var designation = await _db.designations.FindAsync(id);
+            var designation = await _db.Designations.FindAsync(id);
             if (designation == null)
             {
                 return NotFound();
             }
 
-            _db.designations.Remove(designation);
+            _db.Designations.Remove(designation);
             await _db.SaveChangesAsync();
 
             return NoContent();
@@ -100,7 +100,7 @@ namespace CourierApi.Controllers
 
         private bool DesignationExists(int id)
         {
-            return _db.designations.Any(e => e.designationId == id);
+            return _db.Designations.Any(e => e.designationId == id);
         }
     }
 }

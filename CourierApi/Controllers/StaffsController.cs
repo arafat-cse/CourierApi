@@ -144,7 +144,7 @@ namespace CourierApi.Controllers
             try
             {
                 // Validate designation ID
-                var designationExists = await _db.designations.AnyAsync(d => d.designationId == staff.designationId);
+                var designationExists = await _db.Designations.AnyAsync(d => d.designationId == staff.designationId);
                 if (!designationExists)
                 {
                     cp.errorMessage = "Invalid Designation ID.";

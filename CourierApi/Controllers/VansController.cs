@@ -23,16 +23,16 @@ namespace CourierApi.Controllers
 
         // GET: api/Vans
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Van>>> Getvans()
+        public async Task<ActionResult<IEnumerable<Van>>> GetVans()
         {
-            return await _db.vans.ToListAsync();
+            return await _db.Vans.ToListAsync();
         }
 
         // GET: api/Vans/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Van>> GetVan(int id)
         {
-            var van = await _db.vans.FindAsync(id);
+            var van = await _db.Vans.FindAsync(id);
 
             if (van == null)
             {
@@ -77,7 +77,7 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Van>> PostVan(Van van)
         {
-            _db.vans.Add(van);
+            _db.Vans.Add(van);
             await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetVan", new { id = van.vanId }, van);
@@ -87,13 +87,13 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVan(int id)
         {
-            var van = await _db.vans.FindAsync(id);
+            var van = await _db.Vans.FindAsync(id);
             if (van == null)
             {
                 return NotFound();
             }
 
-            _db.vans.Remove(van);
+            _db.Vans.Remove(van);
             await _db.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace CourierApi.Controllers
 
         private bool VanExists(int id)
         {
-            return _db.vans.Any(e => e.vanId == id);
+            return _db.Vans.Any(e => e.vanId == id);
         }
     }
 }
