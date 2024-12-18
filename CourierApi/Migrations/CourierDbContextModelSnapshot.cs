@@ -285,7 +285,7 @@ namespace CourierApi.Migrations
 
                     b.HasKey("designationId");
 
-                    b.ToTable("designations");
+                    b.ToTable("Designations");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Invoice", b =>
@@ -355,14 +355,11 @@ namespace CourierApi.Migrations
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("VanId")
-                        .HasColumnType("int");
-
                     b.Property<string>("createBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("createDate")
+                    b.Property<DateTime?>("createDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("deliveryChargeId")
@@ -374,28 +371,29 @@ namespace CourierApi.Migrations
                     b.Property<DateTime>("estimatedReceiveTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("isDispatchedFromBranch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isInTransit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isReceivedAtBranch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isReceivedByReceiver")
+                        .HasColumnType("bit");
+
                     b.Property<string>("parcelCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("parcelTypeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("percelSendingDestribution")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("recebingBranch")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("recebingDistributin")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("recebingReceber")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("receiveTime")
+                    b.Property<DateTime?>("receiveTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("receiverBranchId")
@@ -404,7 +402,7 @@ namespace CourierApi.Migrations
                     b.Property<int>("receiverCustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("sendTime")
+                    b.Property<DateTime?>("sendTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("senderBranchId")
@@ -413,21 +411,17 @@ namespace CourierApi.Migrations
                     b.Property<int>("senderCustomerId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("sendingBranch")
-                        .HasColumnType("bit");
-
                     b.Property<string>("updateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("updateDate")
+                    b.Property<DateTime?>("updateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("weight")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int?>("vanId")
+                        .HasColumnType("int");
 
                     b.HasKey("parcelId");
-
-                    b.HasIndex("VanId");
 
                     b.HasIndex("deliveryChargeId");
 
@@ -435,7 +429,11 @@ namespace CourierApi.Migrations
 
                     b.HasIndex("receiverBranchId");
 
-                    b.ToTable("Parsers");
+                    b.HasIndex("senderBranchId");
+
+                    b.HasIndex("vanId");
+
+                    b.ToTable("Parcels");
                 });
 
             modelBuilder.Entity("CourierApi.Models.ParcelType", b =>
@@ -468,7 +466,7 @@ namespace CourierApi.Migrations
 
                     b.HasKey("parcelTypeId");
 
-                    b.ToTable("ParsersTypes");
+                    b.ToTable("ParcelTypes");
                 });
 
             modelBuilder.Entity("CourierApi.Models.PaymentMethod", b =>
@@ -574,7 +572,7 @@ namespace CourierApi.Migrations
 
                     b.HasKey("vanId");
 
-                    b.ToTable("vans");
+                    b.ToTable("Vans");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Bank", b =>
@@ -649,34 +647,42 @@ namespace CourierApi.Migrations
 
             modelBuilder.Entity("CourierApi.Models.Parcel", b =>
                 {
-                    b.HasOne("CourierApi.Models.Van", "Vans")
-                        .WithMany("Parcels")
-                        .HasForeignKey("VanId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("CourierApi.Models.DeliveryCharge", "DeliveryCharges")
+                    b.HasOne("CourierApi.Models.DeliveryCharge", "DeliveryCharge")
                         .WithMany("Parcels")
                         .HasForeignKey("deliveryChargeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("CourierApi.Models.ParcelType", "ParcelTypes")
+                    b.HasOne("CourierApi.Models.ParcelType", "ParcelType")
                         .WithMany("Parcels")
                         .HasForeignKey("parcelTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("CourierApi.Models.Branch", "Branchs")
-                        .WithMany("Parcels")
+                    b.HasOne("CourierApi.Models.Branch", "ReceiverBranch")
+                        .WithMany("ReceiverBranch")
                         .HasForeignKey("receiverBranchId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Branchs");
+                    b.HasOne("CourierApi.Models.Branch", "SenderBranch")
+                        .WithMany("SenderBranch")
+                        .HasForeignKey("senderBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("DeliveryCharges");
+                    b.HasOne("CourierApi.Models.Van", "Van")
+                        .WithMany("Parcels")
+                        .HasForeignKey("vanId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("ParcelTypes");
+                    b.Navigation("DeliveryCharge");
 
-                    b.Navigation("Vans");
+                    b.Navigation("ParcelType");
+
+                    b.Navigation("ReceiverBranch");
+
+                    b.Navigation("SenderBranch");
+
+                    b.Navigation("Van");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Staff", b =>
@@ -694,7 +700,9 @@ namespace CourierApi.Migrations
                 {
                     b.Navigation("ChildBranches");
 
-                    b.Navigation("Parcels");
+                    b.Navigation("ReceiverBranch");
+
+                    b.Navigation("SenderBranch");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Company", b =>

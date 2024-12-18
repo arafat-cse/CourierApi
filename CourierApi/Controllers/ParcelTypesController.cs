@@ -25,14 +25,14 @@ namespace CourierApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ParcelType>>> GetParsersTypes()
         {
-            return await _db.ParsersTypes.ToListAsync();
+            return await _db.ParcelTypes.ToListAsync();
         }
 
         // GET: api/ParcelTypes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ParcelType>> GetParcelType(int id)
         {
-            var parcelType = await _db.ParsersTypes.FindAsync(id);
+            var parcelType = await _db.ParcelTypes.FindAsync(id);
 
             if (parcelType == null)
             {
@@ -76,7 +76,7 @@ namespace CourierApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ParcelType>> PostParcelType(ParcelType parcelType)
         {
-            _db.ParsersTypes.Add(parcelType);
+            _db.ParcelTypes.Add(parcelType);
             await _db.SaveChangesAsync();
 
             return CreatedAtAction("GetParcelType", new { id = parcelType.parcelTypeId }, parcelType);
@@ -86,13 +86,13 @@ namespace CourierApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParcelType(int id)
         {
-            var parcelType = await _db.ParsersTypes.FindAsync(id);
+            var parcelType = await _db.ParcelTypes.FindAsync(id);
             if (parcelType == null)
             {
                 return NotFound();
             }
 
-            _db.ParsersTypes.Remove(parcelType);
+            _db.ParcelTypes.Remove(parcelType);
             await _db.SaveChangesAsync();
 
             return NoContent();
@@ -100,7 +100,7 @@ namespace CourierApi.Controllers
 
         private bool ParcelTypeExists(int id)
         {
-            return _db.ParsersTypes.Any(e => e.parcelTypeId == id);
+            return _db.ParcelTypes.Any(e => e.parcelTypeId == id);
         }
     }
 }
