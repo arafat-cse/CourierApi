@@ -54,7 +54,7 @@ namespace CourierApi.Models
 
         [ForeignKey("Branch")]
         public int senderBranchId { get; set; }
-        public virtual Branch SenderBranch { get; set; }
+        public virtual Branch SenderBranch { get; set; }  
 
         [ForeignKey("Branch")]
         public int receiverBranchId { get; set; }
@@ -62,7 +62,7 @@ namespace CourierApi.Models
 
         public DateTime estimatedReceiveTime { get; set; }
         public bool IsPaid { get; set; }
-        public decimal price { get; set; }
+        public decimal price { get; set; } 
 
         public string createBy { get; set; }
         public DateTime? createDate { get; set; }
