@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourierApi.Data;
 using CourierApi.Models;
-
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace CourierApi.Controllers
 {
     [Route("api/[controller]")]
@@ -20,35 +20,93 @@ namespace CourierApi.Controllers
         {
             _db = db;
         }
-
+        //CommanResponse
+        CommanResponse cp = new CommanResponse();
         // GET: api/Customers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            return await _db.Customers.ToListAsync();
+            try
+            {
+
+                var customer = await _db.Customers.ToListAsync();
+                if (customer == null || !customer.Any())
+                {
+                    cp.errorMessage = null;
+                    cp.status = true;
+                    cp.message = "No customer found here.";
+                    cp.content = null;
+                    return Ok(cp);
+                }
+
+                // Populate response for a successful find
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Customer retrieved successfully!";
+                cp.content = customer;
+
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the Customer.";
+                cp.content = null;
+
+                return BadRequest(cp);
+            }
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
-            var customer = await _db.Customers.FindAsync(id);
-
-            if (customer == null)
+            try
             {
-                return NotFound();
-            }
+                // Find the Customer by ID
+                var customer = await _db.Customers.FindAsync(id);
 
-            return customer;
+                if (customer == null)
+                {
+                    cp.errorMessage = "customer is not found";
+                    cp.status = false;
+                    cp.message = "No customer exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+
+                // Populate response for a successful retrieval
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Company retrieved successfully!";
+                cp.content = customer;
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the customer.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
         // PUT: api/Customers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
+
             if (id != customer.customerId)
             {
-                return BadRequest();
+                cp.errorMessage = "Badrequer ID mismatch";
+                cp.status = false;
+                cp.message = "customer not found";
+                cp.content = null;
+                return BadRequest(cp);
+
             }
 
             _db.Entry(customer).State = EntityState.Modified;
@@ -59,9 +117,9 @@ namespace CourierApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustomerExists(id))
+                if (!_db.Customers.Any(c => c.customerId == id))
                 {
-                    return NotFound();
+                    return NotFound("customer not found");
                 }
                 else
                 {
@@ -69,33 +127,76 @@ namespace CourierApi.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(new { Message = "customer updated successfully", customerId = id });
+
+            //return NoContent();
         }
 
         // POST: api/Customers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
-            _db.Customers.Add(customer);
-            await _db.SaveChangesAsync();
+            try
+            {
+                _db.Customers.Add(customer);
+                await _db.SaveChangesAsync();
 
-            return CreatedAtAction("GetCustomer", new { id = customer.customerId }, customer);
+                cp.errorMessage = null; // No error since the operation is successful
+                cp.status = true; // Success status
+                cp.message = "customer created successfully!";
+                cp.content = customer;
+
+                // Returning the common response with CreatedAtAction
+                return CreatedAtAction(nameof(GetCustomer), new { id = customer.customerId }, cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "Failed to create customer.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            var customer = await _db.Customers.FindAsync(id);
-            if (customer == null)
+            try
             {
-                return NotFound();
+                // Find the customer by ID
+                var customer = await _db.Customers.FindAsync(id);
+
+                if (customer == null)
+                {
+                    // Company not found response
+                    cp.errorMessage = "customer not found";
+                    cp.status = false;
+                    cp.message = "No customer exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+
+                // Remove the company and save changes
+                _db.Customers.Remove(customer);
+                await _db.SaveChangesAsync();
+
+                // Populate success response
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "Customer deleted successfully!";
+                cp.content = customer;
+                return Ok(cp);
             }
-
-            _db.Customers.Remove(customer);
-            await _db.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while deleting the Customer.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
         private bool CustomerExists(int id)
