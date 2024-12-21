@@ -27,7 +27,6 @@ namespace CourierApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Designation>>> GetDesignations()
         {
-            //return await _db.Designations.ToListAsync();
             try
             {
                 var designations = await _db.Designations.ToListAsync();
@@ -81,7 +80,6 @@ namespace CourierApi.Controllers
             }
             catch (Exception ex)
             {
-                // Handle exceptions
                 cp.errorMessage = ex.Message;
                 cp.status = false;
                 cp.message = "An error occurred while retrieving the Designation.";
@@ -180,7 +178,6 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-
         private bool DesignationExists(int id)
         {
             return _db.Designations.Any(e => e.designationId == id);
