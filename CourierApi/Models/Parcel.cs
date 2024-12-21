@@ -62,8 +62,8 @@ namespace CourierApi.Models
 
         public DateTime estimatedReceiveTime { get; set; }
         public bool IsPaid { get; set; }
-        public decimal price { get; set; } 
-
+        public decimal price { get; set; }
+        public double weight { get; set; }
         public string createBy { get; set; }
         public DateTime? createDate { get; set; }
         public string updateBy { get; set; }

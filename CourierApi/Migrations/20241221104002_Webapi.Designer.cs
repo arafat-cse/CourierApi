@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourierApi.Migrations
 {
     [DbContext(typeof(CourierDbContext))]
-    [Migration("20241218084916_updateApi")]
-    partial class updateApi
+    [Migration("20241221104002_Webapi")]
+    partial class Webapi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -423,6 +423,9 @@ namespace CourierApi.Migrations
 
                     b.Property<int?>("vanId")
                         .HasColumnType("int");
+
+                    b.Property<double>("weight")
+                        .HasColumnType("float");
 
                     b.HasKey("parcelId");
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourierApi.Migrations
 {
     /// <inheritdoc />
-    public partial class updateApi : Migration
+    public partial class Webapi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -266,6 +266,7 @@ namespace CourierApi.Migrations
                     estimatedReceiveTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsPaid = table.Column<bool>(type: "bit", nullable: false),
                     price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    weight = table.Column<double>(type: "float", nullable: false),
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
