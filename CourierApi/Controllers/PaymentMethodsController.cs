@@ -20,26 +20,68 @@ namespace CourierApi.Controllers
         {
             _db = db;
         }
-
+        //CommanResponse
+        private readonly CommanResponse cp = new CommanResponse();
         // GET: api/PaymentMethods
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PaymentMethod>>> GetPaymentMethods()
         {
-            return await _db.PaymentMethods.ToListAsync();
+            try
+            {
+                var paymentMethod = await _db.PaymentMethods.ToListAsync();
+                if (paymentMethod == null || !paymentMethod.Any())
+                {
+                    cp.errorMessage = null;
+                    cp.status = true;
+                    cp.message = "No paymentMethod found.";
+                    cp.content = null;
+                    return Ok(cp);
+                }
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "PaymentMethod retrieved successfully!";
+                cp.content = paymentMethod;
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the PaymentMethod.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
         // GET: api/PaymentMethods/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PaymentMethod>> GetPaymentMethod(int id)
         {
-            var paymentMethod = await _db.PaymentMethods.FindAsync(id);
-
-            if (paymentMethod == null)
+            try
             {
-                return NotFound();
+                var paymentMethod = await _db.PaymentMethods.FindAsync(id);
+                if (paymentMethod == null)
+                {
+                    cp.errorMessage = "paymentMethod not found";
+                    cp.status = false;
+                    cp.message = "No PaymentMethod exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "PaymentMethod retrieved successfully!";
+                cp.content = paymentMethod;
+                return Ok(cp);
             }
-
-            return paymentMethod;
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while retrieving the PaymentMethod.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
         // PUT: api/PaymentMethods/5       
@@ -48,9 +90,12 @@ namespace CourierApi.Controllers
         {
             if (id != paymentMethod.paymentMethodId)
             {
-                return BadRequest();
+                cp.errorMessage = "Badrequer ID mismatch";
+                cp.status = false;
+                cp.message = "paymentMethod not found";
+                cp.content = null;
+                return BadRequest(cp);
             }
-
             _db.Entry(paymentMethod).State = EntityState.Modified;
 
             try
@@ -61,43 +106,75 @@ namespace CourierApi.Controllers
             {
                 if (!PaymentMethodExists(id))
                 {
-                    return NotFound();
+                    return NotFound("paymentMethod not found");
                 }
                 else
                 {
                     throw;
                 }
             }
-
-            return NoContent();
+            return Ok(new { Message = "paymentMethod updated successfully", paymentMethodId = id });
         }
 
         // POST: api/PaymentMethods
         [HttpPost]
         public async Task<ActionResult<PaymentMethod>> PostPaymentMethod(PaymentMethod paymentMethod)
         {
-            _db.PaymentMethods.Add(paymentMethod);
-            await _db.SaveChangesAsync();
+            try
+            {
+                _db.PaymentMethods.Add(paymentMethod);
+                await _db.SaveChangesAsync();
 
-            return CreatedAtAction("GetPaymentMethod", new { id = paymentMethod.paymentMethodId }, paymentMethod);
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "paymentMethod created successfully!";
+                cp.content = paymentMethod;
+                return CreatedAtAction("GetpaymentMethod", new { id = paymentMethod.paymentMethodId }, paymentMethod);
+            }
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "Failed to paymentMethod.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
 
         // DELETE: api/PaymentMethods/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentMethod(int id)
         {
-            var paymentMethod = await _db.PaymentMethods.FindAsync(id);
-            if (paymentMethod == null)
+            try
             {
-                return NotFound();
+                // Find the company by ID
+                var paymentMethod = await _db.PaymentMethods.FindAsync(id);
+
+                if (paymentMethod == null)
+                {
+                    cp.errorMessage = "paymentMethod not found";
+                    cp.status = false;
+                    cp.message = "No paymentMethod exists with the provided ID.";
+                    cp.content = null;
+                    return NotFound(cp);
+                }
+                _db.PaymentMethods.Remove(paymentMethod);
+                await _db.SaveChangesAsync();
+                cp.errorMessage = null;
+                cp.status = true;
+                cp.message = "paymentMethod deleted successfully!";
+                cp.content = paymentMethod;
+                return Ok(cp);
             }
-
-            _db.PaymentMethods.Remove(paymentMethod);
-            await _db.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                cp.errorMessage = ex.Message;
+                cp.status = false;
+                cp.message = "An error occurred while deleting the paymentMethod.";
+                cp.content = null;
+                return BadRequest(cp);
+            }
         }
-
         private bool PaymentMethodExists(int id)
         {
             return _db.PaymentMethods.Any(e => e.paymentMethodId == id);
