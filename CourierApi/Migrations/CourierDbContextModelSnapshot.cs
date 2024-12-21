@@ -421,6 +421,9 @@ namespace CourierApi.Migrations
                     b.Property<int?>("vanId")
                         .HasColumnType("int");
 
+                    b.Property<double>("weight")
+                        .HasColumnType("float");
+
                     b.HasKey("parcelId");
 
                     b.HasIndex("deliveryChargeId");

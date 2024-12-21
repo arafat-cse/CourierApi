@@ -159,7 +159,7 @@ namespace CourierApi.Data
                 .WithMany(d => d.Parcels)
                 .HasForeignKey(s => s.deliveryChargeId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            //Invoice
             modelBuilder.Entity<Invoice>()
                 .HasOne(s => s.Customers)
                 .WithMany(d => d.Invoices)
