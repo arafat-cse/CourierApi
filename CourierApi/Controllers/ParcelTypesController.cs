@@ -87,7 +87,7 @@ namespace CourierApi.Controllers
         {
             if (id != parcelType.parcelTypeId)
             {
-                cp.errorMessage = "Badrequer ID mismatch";
+                cp.errorMessage = "Bad request ID mismatch";
                 cp.status = false;
                 cp.message = "Perceltype not found";
                 cp.content = null;
