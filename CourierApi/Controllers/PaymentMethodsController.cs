@@ -22,7 +22,7 @@ namespace CourierApi.Controllers
         }
         //CommanResponse
         private readonly CommanResponse cp = new CommanResponse();
-        // GET: api/PaymentMethods
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PaymentMethod>>> GetPaymentMethods()
         {
@@ -53,7 +53,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // GET: api/PaymentMethods/5
+        // GET: /5
         [HttpGet("{id}")]
         public async Task<ActionResult<PaymentMethod>> GetPaymentMethod(int id)
         {
@@ -84,7 +84,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // PUT: api/PaymentMethods/5       
+        // PUT: /5       
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPaymentMethod(int id, PaymentMethod paymentMethod)
         {
@@ -116,7 +116,7 @@ namespace CourierApi.Controllers
             return Ok(new { Message = "paymentMethod updated successfully", paymentMethodId = id });
         }
 
-        // POST: api/PaymentMethods
+        // POST: 
         [HttpPost]
         public async Task<ActionResult<PaymentMethod>> PostPaymentMethod(PaymentMethod paymentMethod)
         {
@@ -141,7 +141,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // DELETE: api/PaymentMethods/5
+        // DELETE: /5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentMethod(int id)
         {

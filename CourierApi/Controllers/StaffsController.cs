@@ -21,8 +21,8 @@ namespace CourierApi.Controllers
             _db = context;
         }
         //CommanResponse
-        CommanResponse cp = new CommanResponse();
-        // GET: api/Staffs
+        private readonly CommanResponse cp = new CommanResponse();
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
         {
@@ -37,8 +37,6 @@ namespace CourierApi.Controllers
                     cp.content = null;
                     return Ok(cp);
                 }
-
-                // Populate response for a successful find
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Staff retrieved successfully!";
@@ -56,6 +54,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
+        //GET
         [HttpGet("{id}")]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
@@ -90,6 +89,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
+        //PUT
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStaff(int id, Staff staff)
         {
@@ -101,8 +101,6 @@ namespace CourierApi.Controllers
                 cp.content = null;
                 return BadRequest(cp);
             }
-
-            // Track the entity and update it
             var existingStaff = await _db.Staffs.Include(s => s.Designation).FirstOrDefaultAsync(s => s.staffId == id);
             if (existingStaff == null)
             {
@@ -138,6 +136,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
+        //POST
         [HttpPost]
         public async Task<ActionResult<Staff>> PostStaff(Staff staff)
         {
@@ -174,6 +173,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
+        //DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStaff(int id)
         {

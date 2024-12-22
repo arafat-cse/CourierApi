@@ -23,7 +23,7 @@ namespace CourierApi.Controllers
         // Common response model
         private readonly CommanResponse cp = new CommanResponse();
 
-        // GET: api/DeliveryCharges
+        // GET:
         [HttpGet]
         public async Task<IActionResult> GetDeliveryCharges()
         {
@@ -53,7 +53,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // GET: api/DeliveryCharges/{id}
+        // GET:/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDeliveryCharge(int id)
         {
@@ -84,7 +84,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // POST: api/DeliveryCharges
+        // POST:
         [HttpPost]
         public async Task<IActionResult> PostDeliveryCharge(DeliveryCharge deliveryCharge)
         {
@@ -110,7 +110,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // PUT: api/DeliveryCharges/{id}
+        // PUT:
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDeliveryCharge(int id, DeliveryCharge deliveryCharge)
         {
@@ -132,8 +132,6 @@ namespace CourierApi.Controllers
                     cp.content = null;
                     return NotFound(cp);
                 }
-
-                // Update properties
                 existingCharge.weight = deliveryCharge.weight;
                 existingCharge.price = deliveryCharge.price;
                 existingCharge.updateBy = deliveryCharge.updateBy;
@@ -158,7 +156,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // DELETE: api/DeliveryCharges/{id}
+        // DELETE:
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDeliveryCharge(int id)
         {

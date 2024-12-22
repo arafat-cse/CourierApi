@@ -21,8 +21,8 @@ namespace CourierApi.Controllers
             _db = db;
         }
         //CommanResponse
-        CommanResponse cp = new CommanResponse();
-        // GET: api/Banks
+        private readonly CommanResponse cp = new CommanResponse();
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBanks()
         {
@@ -57,7 +57,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // GET: api/Banks/{id}
+        // GET: /{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Bank>> GetBank(int id)
         {
@@ -90,7 +90,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // PUT: api/Banks/{id}
+        // PUT:
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBank(int id, Bank bank)
         {
@@ -124,7 +124,7 @@ namespace CourierApi.Controllers
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Bank updated successfully!";
-                cp.content = null; // Optional
+                cp.content = null;
                 return Ok(cp);
             }
             catch (Exception ex)
@@ -137,7 +137,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // POST: api/Banks
+        // POST: 
         [HttpPost]
         public async Task<ActionResult<Bank>> PostBank(Bank bank)
         {
@@ -163,7 +163,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // DELETE: api/Banks/{id}
+        // DELETE:
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBank(int id)
         {

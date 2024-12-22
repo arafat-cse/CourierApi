@@ -21,7 +21,7 @@ namespace CourierApi.Controllers
             _db = db;
         }
         private readonly CommanResponse cp = new CommanResponse();
-        // GET: api/ParcelTypes
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ParcelType>>> GetParsersTypes()
         {
@@ -51,7 +51,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // GET: api/ParcelTypes/5
+        // GET: /5
         [HttpGet("{id}")]
         public async Task<ActionResult<ParcelType>> GetParcelType(int id)
         {
@@ -81,7 +81,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // PUT: api/ParcelTypes/5
+        // PUT: /5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutParcelType(int id, ParcelType parcelType)
         {
@@ -111,7 +111,7 @@ namespace CourierApi.Controllers
             }
             return Ok(new { Message = "Perceltype updated successfully", customerId = id });
         }
-        // POST: api/ParcelTypes 
+        // POST:  
         [HttpPost]
         public async Task<ActionResult<ParcelType>> PostParcelType(ParcelType parcelType)
         {
@@ -144,7 +144,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // DELETE: api/ParcelTypes/5
+        // DELETE: /5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParcelType(int id)
         {

@@ -15,9 +15,9 @@ namespace CourierApi.Models
         public DateTime? updateDate { get; set; }
         public bool IsActive { get; set; }
          [ForeignKey("Parent")]
-        public int? ParentId { get; set; } // Nullable for root branches
-        public virtual Branch? Parent { get; set; } // Navigation property for Parent
-        public virtual ICollection<Branch>? ChildBranches { get; set; } // Navigation property for Children
+        public int? ParentId { get; set; } 
+        public virtual Branch? Parent { get; set; } 
+        public virtual ICollection<Branch>? ChildBranches { get; set; } 
         public virtual ICollection<Parcel>? SenderBranch { get; set; }
         public virtual ICollection<Parcel>? ReceiverBranch { get; set; }
 

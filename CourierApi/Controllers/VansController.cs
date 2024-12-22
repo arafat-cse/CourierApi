@@ -24,7 +24,7 @@ namespace CourierApi.Controllers
         }
         // CommanResponse
         private readonly CommanResponse cp = new CommanResponse();
-        // GET: api/Vans
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Van>>> GetVans()
         {
@@ -54,7 +54,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // GET: api/Vans/5
+        // GET: /5
         [HttpGet("{id}")]
         public async Task<ActionResult<Van>> GetVan(int id)
         {
@@ -85,7 +85,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // PUT: api/Vans/5
+        // PUT: /5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVan(int id, Van van)
         {
@@ -124,7 +124,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // POST: api/Vans
+        // POST: 
         [HttpPost]
         public async Task<ActionResult<Van>> PostVan(Van van)
         {
@@ -148,7 +148,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // DELETE: api/Vans/5
+        // DELETE: /5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVan(int id)
         {

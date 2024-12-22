@@ -54,11 +54,11 @@ namespace CourierApi.Models
 
         [ForeignKey("Branch")]
         public int senderBranchId { get; set; }
-        public virtual Branch SenderBranch { get; set; }  
+        public virtual Branch? SenderBranch { get; set; }  
 
         [ForeignKey("Branch")]
         public int receiverBranchId { get; set; }
-        public virtual Branch ReceiverBranch { get; set; }
+        public virtual Branch? ReceiverBranch { get; set; }
 
         public DateTime estimatedReceiveTime { get; set; }
         public bool IsPaid { get; set; }
@@ -76,19 +76,19 @@ namespace CourierApi.Models
 
         [ForeignKey("Van")]
         public int? vanId { get; set; }
-        public virtual Van Van { get; set; }
+        public virtual Van? Van { get; set; }
 
         public int? driverId { get; set; }
 
         [ForeignKey("DeliveryCharge")]
         public int? deliveryChargeId { get; set; }
-        public virtual DeliveryCharge DeliveryCharge { get; set; }
+        public virtual DeliveryCharge? DeliveryCharge { get; set; }
 
         [ForeignKey("ParcelType")]
         public int? parcelTypeId { get; set; }
-        public virtual ParcelType ParcelType { get; set; }
+        public virtual ParcelType? ParcelType { get; set; }
 
-        public virtual ICollection<Invoice> Invoices { get; set; }
+        public virtual ICollection<Invoice>? Invoices { get; set; }
         public bool IsActive { get; set; } = true;
     
 
