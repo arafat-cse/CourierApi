@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourierApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Webapi : Migration
+    public partial class WebAPI : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -328,7 +328,7 @@ namespace CourierApi.Migrations
                     createBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    updateDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     customerId = table.Column<int>(type: "int", nullable: false),
                     paymentMethodId = table.Column<int>(type: "int", nullable: false),

@@ -20,13 +20,13 @@ namespace CourierApi.Controllers
         {
             _db = db;
         }
-
+        //CommanResponse
         private readonly CommanResponse cp = new CommanResponse();
-
-        // GET: api/Invoices
+        // GET: 
         [HttpGet]
-        public async Task<IActionResult> GetInvoices()
+        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
+            //return await _db.Invoices.ToListAsync();
             try
             {
                 var invoices = await _db.Invoices
@@ -55,21 +55,36 @@ namespace CourierApi.Controllers
                 cp.errorMessage = ex.Message;
                 return StatusCode(500, cp);
             }
+
         }
 
-        // GET: api/Invoices/{id}
+        // GET: /5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetInvoice(int id)
+        public async Task<ActionResult<Invoice>> GetInvoice(int id)
+        {
+            var invoice = await _db.Invoices.FindAsync(id);
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            return invoice;
+        }
+
+        // PUT: /5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
         {
             try
             {
-                var invoice = await _db.Invoices
+                var invoic = await _db.Invoices
                     .Include(c => c.Customers)
                     .Include(p => p.PaymentMethods)
                     .Include(p => p.Parcels)
                     .FirstOrDefaultAsync(i => i.invoiceId == id);
 
-                if (invoice == null)
+                if (invoic == null)
                 {
                     cp.status = false;
                     cp.message = "Invoice not found.";
@@ -78,7 +93,7 @@ namespace CourierApi.Controllers
 
                 cp.status = true;
                 cp.message = "Invoice retrieved successfully.";
-                cp.content = invoice;
+                cp.content = invoic;
                 return Ok(cp);
             }
             catch (Exception ex)
@@ -88,11 +103,12 @@ namespace CourierApi.Controllers
                 cp.errorMessage = ex.Message;
                 return StatusCode(500, cp);
             }
+
         }
 
-        // POST: api/Invoices
+        // POST: 
         [HttpPost]
-        public async Task<IActionResult> PostInvoice(Invoice invoice)
+        public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
             try
             {
@@ -113,7 +129,8 @@ namespace CourierApi.Controllers
                 cp.status = true;
                 cp.message = "Invoice created successfully.";
                 cp.content = invoice;
-                return CreatedAtAction(nameof(GetInvoice), new { id = invoice.invoiceId }, cp);
+                return CreatedAtAction("GetInvoice", new { id = invoice.invoiceId }, cp);
+                
             }
             catch (Exception ex)
             {
@@ -122,79 +139,23 @@ namespace CourierApi.Controllers
                 cp.errorMessage = ex.Message;
                 return StatusCode(500, cp);
             }
+
         }
 
-        // PUT: api/Invoices/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
-        {
-            if (id != invoice.invoiceId)
-            {
-                cp.status = false;
-                cp.message = "Invoice ID mismatch.";
-                return BadRequest(cp);
-            }
-
-            _db.Entry(invoice).State = EntityState.Modified;
-
-            try
-            {
-                await _db.SaveChangesAsync();
-                cp.status = true;
-                cp.message = "Invoice updated successfully.";
-                return Ok(cp);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!InvoiceExists(id))
-                {
-                    cp.status = false;
-                    cp.message = "Invoice not found.";
-                    return NotFound(cp);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Failed to update the invoice.";
-                cp.errorMessage = ex.Message;
-                return StatusCode(500, cp);
-            }
-        }
-
-        // DELETE: api/Invoices/{id}
+        // DELETE: /5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            try
+            var invoice = await _db.Invoices.FindAsync(id);
+            if (invoice == null)
             {
-                var invoice = await _db.Invoices.FindAsync(id);
-
-                if (invoice == null)
-                {
-                    cp.status = false;
-                    cp.message = "Invoice not found.";
-                    return NotFound(cp);
-                }
-
-                _db.Invoices.Remove(invoice);
-                await _db.SaveChangesAsync();
-
-                cp.status = true;
-                cp.message = "Invoice deleted successfully.";
-                return Ok(cp);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Failed to delete the invoice.";
-                cp.errorMessage = ex.Message;
-                return StatusCode(500, cp);
-            }
+
+            _db.Invoices.Remove(invoice);
+            await _db.SaveChangesAsync();
+
+            return NoContent();
         }
 
         private bool InvoiceExists(int id)
@@ -202,5 +163,4 @@ namespace CourierApi.Controllers
             return _db.Invoices.Any(e => e.invoiceId == id);
         }
     }
-
 }

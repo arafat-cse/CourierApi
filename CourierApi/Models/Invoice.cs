@@ -9,7 +9,7 @@ namespace CourierApi.Models
         public int invoiceId { get; set; }
         public DateTime paymentTime { get; set; }
         public decimal amount { get; set; }
-        public string? particular { get; set; }       
+        public string? particular { get; set; }
         public string createBy { get; set; }
         public DateTime createDate { get; set; }
         public string? updateBy { get; set; }
