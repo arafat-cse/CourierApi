@@ -21,9 +21,9 @@ namespace CourierApi.Controllers
             _db=db;
         }
         //CommanResponse
-        CommanResponse cp = new CommanResponse();
+        private readonly CommanResponse cp = new CommanResponse();
 
-        //1. Get All Companys
+        //GET
         [HttpGet]
         public async Task<ActionResult<CommanResponse>> GetCompany()
         {
@@ -39,8 +39,6 @@ namespace CourierApi.Controllers
                     cp.content = null;
                     return Ok(cp); 
                 }
-
-                // Populate response for a successful find
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Companies retrieved successfully!";
@@ -59,7 +57,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // 2. GET a Company by ID
+        //GET
         [HttpGet("{id}")]
         public async Task<ActionResult<CommanResponse>> GetCompany(int id)
         {
@@ -77,8 +75,6 @@ namespace CourierApi.Controllers
                     cp.content = null;
                     return NotFound(cp); 
                 }
-
-                // Populate response for a successful retrieval
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Company retrieved successfully!";
@@ -87,7 +83,7 @@ namespace CourierApi.Controllers
             }
             catch (Exception ex)
             {
-                // Handle exceptions
+                
                 cp.errorMessage = ex.Message;
                 cp.status = false;
                 cp.message = "An error occurred while retrieving the company.";
@@ -95,7 +91,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp); 
             }
         }
-        // 3. POST a New Company
+        //POST 
         [HttpPost]
         public async Task<ActionResult<Company>> PostCompany(Company company)
         {
@@ -104,12 +100,11 @@ namespace CourierApi.Controllers
                 _db.Companys.Add(company);
                 await _db.SaveChangesAsync();
 
-                cp.errorMessage = null; // No error since the operation is successful
-                cp.status = true; // Success status
+                cp.errorMessage = null;
+                cp.status = true; 
                 cp.message = "Company created successfully!";
                 cp.content = company;
 
-                // Returning the common response with CreatedAtAction
                 return CreatedAtAction(nameof(GetCompany), new { id = company.companyId }, cp);
             }
             catch (Exception ex)
@@ -122,11 +117,10 @@ namespace CourierApi.Controllers
             }
 
         }
-        // 4. PUT Update a Company
+        //PUT
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCompany(int id, Company company)
         {
-           
             if (id != company.companyId)
             {
                 cp.errorMessage="Badrequer ID mismatch";
@@ -158,7 +152,7 @@ namespace CourierApi.Controllers
             return Ok(new { Message = "Company updated successfully", CompanyId = id });
         }
    
-        // DELETE a Company
+        // DELETE
         [HttpDelete("{id}")]
         public async Task<ActionResult<CommanResponse>> DeleteCompany(int id)
         {
@@ -171,19 +165,14 @@ namespace CourierApi.Controllers
 
                 if (company == null)
                 {
-                    // Company not found response
                     cp.errorMessage = "Company not found";
                     cp.status = false;
                     cp.message = "No company exists with the provided ID.";
                     cp.content = null;
                     return NotFound(cp); 
                 }
-
-                // Remove the company and save changes
                 _db.Companys.Remove(company);
                 await _db.SaveChangesAsync();
-
-                // Populate success response
                 cp.errorMessage = null;
                 cp.status = true;
                 cp.message = "Company deleted successfully!";

@@ -23,7 +23,7 @@ namespace CourierApi.Controllers
         }
         //CommanResponse
         private readonly CommanResponse cp = new CommanResponse();
-        // GET: api/Designations
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Designation>>> GetDesignations()
         {
@@ -55,7 +55,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // GET: api/Designations/5
+        // GET: 
         [HttpGet("{id}")]
         public async Task<ActionResult<Designation>> GetDesignation(int id)
         {
@@ -87,7 +87,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // PUT: api/Designations/5
+        // PUT: 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDesignation(int id, Designation designation)
         {
@@ -120,7 +120,7 @@ namespace CourierApi.Controllers
             return Ok(new { Message = "Designation updated successfully", designationId = id });
         }
 
-        // POST: api/Designations
+        // POST: 
         [HttpPost]
         public async Task<ActionResult<Designation>> PostDesignation(Designation designation)
         {
@@ -144,7 +144,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // DELETE: api/Designations/5
+        // DELETE: 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDesignation(int id)
         {

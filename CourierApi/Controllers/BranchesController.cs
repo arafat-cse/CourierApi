@@ -15,14 +15,15 @@ namespace CourierApi.Controllers
     public class BranchesController : ControllerBase
     {
         private readonly CourierDbContext _db;
-        private readonly CommanResponse cp = new CommanResponse();
 
         public BranchesController(CourierDbContext db)
         {
             _db = db;
         }
+        //CommanResponse
+        private readonly CommanResponse cp = new CommanResponse();
 
-        // GET: api/Branches
+        // GET:
         [HttpGet]
         public IActionResult GetBranches()
         {
@@ -72,7 +73,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // GET: api/Branches/5
+        // GET:/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBranch(int id)
         {
@@ -122,7 +123,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // POST: api/Branches
+        // POST:
         [HttpPost]
         public async Task<IActionResult> PostBranch(Branch branch)
         {
@@ -157,7 +158,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // PUT: api/Branches/5
+        // PUT:/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBranch(int id, Branch branch)
         {
@@ -210,7 +211,7 @@ namespace CourierApi.Controllers
             }
         }
 
-        // DELETE: api/Branches/5
+        // DELETE:/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBranch(int id)
         {

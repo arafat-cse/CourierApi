@@ -20,15 +20,45 @@ namespace CourierApi.Controllers
         {
             _db = db;
         }
-
-        // GET: api/Invoices
+        //CommanResponse
+        private readonly CommanResponse cp = new CommanResponse();
+        // GET: 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
-            return await _db.Invoices.ToListAsync();
+            //return await _db.Invoices.ToListAsync();
+            try
+            {
+                var invoices = await _db.Invoices
+                    .Include(c => c.Customers)
+                    .Include(p => p.PaymentMethods)
+                    .Include(p => p.Parcels)
+                    .ToListAsync();
+
+                if (!invoices.Any())
+                {
+                    cp.status = false;
+                    cp.message = "No invoices found.";
+                    cp.content = null;
+                    return Ok(cp);
+                }
+
+                cp.status = true;
+                cp.message = "Invoices retrieved successfully.";
+                cp.content = invoices;
+                return Ok(cp);
+            }
+            catch (Exception ex)
+            {
+                cp.status = false;
+                cp.message = "Error occurred while retrieving invoices.";
+                cp.errorMessage = ex.Message;
+                return StatusCode(500, cp);
+            }
+
         }
 
-        // GET: api/Invoices/5
+        // GET: /5
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(int id)
         {
@@ -42,47 +72,77 @@ namespace CourierApi.Controllers
             return invoice;
         }
 
-        // PUT: api/Invoices/5
+        // PUT: /5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
         {
-            if (id != invoice.invoiceId)
-            {
-                return BadRequest();
-            }
-
-            _db.Entry(invoice).State = EntityState.Modified;
-
             try
             {
-                await _db.SaveChangesAsync();
+                var invoic = await _db.Invoices
+                    .Include(c => c.Customers)
+                    .Include(p => p.PaymentMethods)
+                    .Include(p => p.Parcels)
+                    .FirstOrDefaultAsync(i => i.invoiceId == id);
+
+                if (invoic == null)
+                {
+                    cp.status = false;
+                    cp.message = "Invoice not found.";
+                    return NotFound(cp);
+                }
+
+                cp.status = true;
+                cp.message = "Invoice retrieved successfully.";
+                cp.content = invoic;
+                return Ok(cp);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!InvoiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                cp.status = false;
+                cp.message = "Error occurred while retrieving the invoice.";
+                cp.errorMessage = ex.Message;
+                return StatusCode(500, cp);
             }
 
-            return NoContent();
         }
 
-        // POST: api/Invoices
+        // POST: 
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            _db.Invoices.Add(invoice);
-            await _db.SaveChangesAsync();
+            try
+            {
+                var isValidCustomer = await _db.Customers.AnyAsync(d => d.customerId == invoice.customerId);
+                var isValidPaymentMethod = await _db.PaymentMethods.AnyAsync(d => d.paymentMethodId == invoice.paymentMethodId);
+                var isValidParcel = await _db.Parcels.AnyAsync(d => d.parcelId == invoice.ParcelsId);
 
-            return CreatedAtAction("GetInvoice", new { id = invoice.invoiceId }, invoice);
+                if (!isValidCustomer || !isValidPaymentMethod || !isValidParcel)
+                {
+                    cp.status = false;
+                    cp.message = "One or more dependencies are invalid.";
+                    return BadRequest(cp);
+                }
+
+                _db.Invoices.Add(invoice);
+                await _db.SaveChangesAsync();
+
+                cp.status = true;
+                cp.message = "Invoice created successfully.";
+                cp.content = invoice;
+                return CreatedAtAction("GetInvoice", new { id = invoice.invoiceId }, cp);
+                
+            }
+            catch (Exception ex)
+            {
+                cp.status = false;
+                cp.message = "Failed to create a new invoice.";
+                cp.errorMessage = ex.Message;
+                return StatusCode(500, cp);
+            }
+
         }
 
-        // DELETE: api/Invoices/5
+        // DELETE: /5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {

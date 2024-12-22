@@ -327,8 +327,8 @@ namespace CourierApi.Migrations
                     b.Property<string>("updateBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("updateDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("updateDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("invoiceId");
 

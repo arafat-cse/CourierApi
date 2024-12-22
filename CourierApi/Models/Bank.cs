@@ -19,7 +19,7 @@ namespace CourierApi.Models
 
             [ForeignKey("Company")]
             public int companyId { get; set; }
-            public virtual Company? Company { get; set; } // Changed property name
+            public virtual Company? Company { get; set; } 
         
 
     }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourierApi.Migrations
 {
     [DbContext(typeof(CourierDbContext))]
-    [Migration("20241221104002_Webapi")]
-    partial class Webapi
+    [Migration("20241222032617_WebAPI")]
+    partial class WebAPI
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -330,8 +330,8 @@ namespace CourierApi.Migrations
                     b.Property<string>("updateBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("updateDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("updateDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("invoiceId");
 

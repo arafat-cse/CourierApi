@@ -21,7 +21,7 @@ namespace CourierApi.Controllers
         }
         //CommanResponse
         private readonly CommanResponse cp = new CommanResponse(); 
-        // GET: api/Customers
+        // GET:
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
@@ -52,7 +52,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // GET: api/Customers/5
+        // GET:/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
@@ -83,7 +83,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // PUT: api/Customers/5
+        // PUT:/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
@@ -113,7 +113,7 @@ namespace CourierApi.Controllers
             }
             return Ok(new { Message = "customer updated successfully", customerId = id });
         }
-        //POST: api/Customers
+        //POST:
        [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
@@ -136,7 +136,7 @@ namespace CourierApi.Controllers
                 return BadRequest(cp);
             }
         }
-        // DELETE: api/Customers/5
+        // DELETE:/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
