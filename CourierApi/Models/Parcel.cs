@@ -45,7 +45,7 @@ namespace CourierApi.Models
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int parcelId { get; set; }
-        public string TarkingCode { get; set; }
+        public string TrackingCode { get; set; }
         [ForeignKey("Customer")]
         public int senderCustomerId { get; set; }
         public virtual Customer Customer { get; set; }
@@ -58,7 +58,7 @@ namespace CourierApi.Models
 
         [ForeignKey("Branch")]
         public int senderBranchId { get; set; }
-        public virtual Branch? SenderBranch { get; set; }  
+        public virtual Branch? SenderBranch { get; set; }
 
         [ForeignKey("Branch")]
         public int receiverBranchId { get; set; }
