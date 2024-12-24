@@ -15,12 +15,12 @@ namespace CourierApi.Models
         public string? updateBy { get; set; }
         public DateTime? updateDate { get; set; }
         public bool IsActive { get; set; }
-        [ForeignKey("Customer")]
-        public int customerId { get; set; }
-        public virtual Customer? Customers { get; set; }
-        [ForeignKey("paymentMethod")]
-        public int paymentMethodId { get; set; }
-        public virtual PaymentMethod? PaymentMethods { get; set; }
+        //[ForeignKey("Customer")]
+        //public int customerId { get; set; }
+        //public virtual Customer? Customers { get; set; }
+        //[ForeignKey("paymentMethod")]
+        //public int paymentMethodId { get; set; }
+        //public virtual PaymentMethod? PaymentMethods { get; set; }
         [ForeignKey("Parcel")]
         public int ParcelsId { get; set; }
         public virtual Parcel? Parcels { get; set; }

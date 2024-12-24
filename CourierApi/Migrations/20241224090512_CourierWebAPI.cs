@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourierApi.Migrations
 {
     /// <inheritdoc />
-    public partial class WebAPI : Migration
+    public partial class CourierWebAPI : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -126,6 +126,21 @@ namespace CourierApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentMethods", x => x.paymentMethodId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Receivers",
+                columns: table => new
+                {
+                    receiverId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    receiverName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    receiverPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReceiverGmail = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Receivers", x => x.receiverId);
                 });
 
             migrationBuilder.CreateTable(
@@ -256,10 +271,10 @@ namespace CourierApi.Migrations
                 {
                     parcelId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    parcelCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TarkingCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     senderCustomerId = table.Column<int>(type: "int", nullable: false),
-                    receiverCustomerId = table.Column<int>(type: "int", nullable: false),
                     sendTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    receiverCustomerId = table.Column<int>(type: "int", nullable: false),
                     receiveTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     senderBranchId = table.Column<int>(type: "int", nullable: false),
                     receiverBranchId = table.Column<int>(type: "int", nullable: false),
@@ -271,15 +286,16 @@ namespace CourierApi.Migrations
                     createDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    isDispatchedFromBranch = table.Column<bool>(type: "bit", nullable: false),
-                    isInTransit = table.Column<bool>(type: "bit", nullable: false),
-                    isReceivedAtBranch = table.Column<bool>(type: "bit", nullable: false),
-                    isReceivedByReceiver = table.Column<bool>(type: "bit", nullable: false),
+                    sendingBranch = table.Column<bool>(type: "bit", nullable: false),
+                    percelSendingDestribution = table.Column<bool>(type: "bit", nullable: false),
+                    recebingDistributin = table.Column<bool>(type: "bit", nullable: false),
+                    recebingBranch = table.Column<bool>(type: "bit", nullable: false),
+                    recebingReceber = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     vanId = table.Column<int>(type: "int", nullable: true),
                     driverId = table.Column<int>(type: "int", nullable: true),
                     deliveryChargeId = table.Column<int>(type: "int", nullable: true),
-                    parcelTypeId = table.Column<int>(type: "int", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    parcelTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -297,6 +313,12 @@ namespace CourierApi.Migrations
                         principalColumn: "branchId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Parcels_Customers_senderCustomerId",
+                        column: x => x.senderCustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "customerId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Parcels_DeliveryCharges_deliveryChargeId",
                         column: x => x.deliveryChargeId,
                         principalTable: "DeliveryCharges",
@@ -307,6 +329,12 @@ namespace CourierApi.Migrations
                         column: x => x.parcelTypeId,
                         principalTable: "ParcelTypes",
                         principalColumn: "parcelTypeId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Parcels_Receivers_receiverCustomerId",
+                        column: x => x.receiverCustomerId,
+                        principalTable: "Receivers",
+                        principalColumn: "receiverId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Parcels_Vans_vanId",
@@ -330,19 +358,12 @@ namespace CourierApi.Migrations
                     updateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     updateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    customerId = table.Column<int>(type: "int", nullable: false),
-                    paymentMethodId = table.Column<int>(type: "int", nullable: false),
-                    ParcelsId = table.Column<int>(type: "int", nullable: false)
+                    ParcelsId = table.Column<int>(type: "int", nullable: false),
+                    paymentMethodId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Invoices", x => x.invoiceId);
-                    table.ForeignKey(
-                        name: "FK_Invoices_Customers_customerId",
-                        column: x => x.customerId,
-                        principalTable: "Customers",
-                        principalColumn: "customerId",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invoices_Parcels_ParcelsId",
                         column: x => x.ParcelsId,
@@ -353,8 +374,7 @@ namespace CourierApi.Migrations
                         name: "FK_Invoices_PaymentMethods_paymentMethodId",
                         column: x => x.paymentMethodId,
                         principalTable: "PaymentMethods",
-                        principalColumn: "paymentMethodId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "paymentMethodId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -376,11 +396,6 @@ namespace CourierApi.Migrations
                 name: "IX_DeliveryCharges_parcelTypeId",
                 table: "DeliveryCharges",
                 column: "parcelTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Invoices_customerId",
-                table: "Invoices",
-                column: "customerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_ParcelsId",
@@ -408,9 +423,19 @@ namespace CourierApi.Migrations
                 column: "receiverBranchId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Parcels_receiverCustomerId",
+                table: "Parcels",
+                column: "receiverCustomerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Parcels_senderBranchId",
                 table: "Parcels",
                 column: "senderBranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Parcels_senderCustomerId",
+                table: "Parcels",
+                column: "senderCustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Parcels_vanId",
@@ -442,9 +467,6 @@ namespace CourierApi.Migrations
                 name: "Staffs");
 
             migrationBuilder.DropTable(
-                name: "Customers");
-
-            migrationBuilder.DropTable(
                 name: "Parcels");
 
             migrationBuilder.DropTable(
@@ -457,7 +479,13 @@ namespace CourierApi.Migrations
                 name: "Branches");
 
             migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
                 name: "DeliveryCharges");
+
+            migrationBuilder.DropTable(
+                name: "Receivers");
 
             migrationBuilder.DropTable(
                 name: "Vans");

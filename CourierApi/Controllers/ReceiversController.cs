@@ -12,47 +12,47 @@ namespace CourierApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InvoicesController : ControllerBase
+    public class ReceiversController : ControllerBase
     {
         private readonly CourierDbContext _context;
 
-        public InvoicesController(CourierDbContext context)
+        public ReceiversController(CourierDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Invoices
+        // GET: api/Receivers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
+        public async Task<ActionResult<IEnumerable<Receiver>>> GetReceivers()
         {
-            return await _context.Invoices.ToListAsync();
+            return await _context.Receivers.ToListAsync();
         }
 
-        // GET: api/Invoices/5
+        // GET: api/Receivers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Invoice>> GetInvoice(int id)
+        public async Task<ActionResult<Receiver>> GetReceiver(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var receiver = await _context.Receivers.FindAsync(id);
 
-            if (invoice == null)
+            if (receiver == null)
             {
                 return NotFound();
             }
 
-            return invoice;
+            return receiver;
         }
 
-        // PUT: api/Invoices/5
+        // PUT: api/Receivers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
+        public async Task<IActionResult> PutReceiver(int id, Receiver receiver)
         {
-            if (id != invoice.invoiceId)
+            if (id != receiver.receiverId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
+            _context.Entry(receiver).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace CourierApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!InvoiceExists(id))
+                if (!ReceiverExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace CourierApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Invoices
+        // POST: api/Receivers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
+        public async Task<ActionResult<Receiver>> PostReceiver(Receiver receiver)
         {
-            _context.Invoices.Add(invoice);
+            _context.Receivers.Add(receiver);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetInvoice", new { id = invoice.invoiceId }, invoice);
+            return CreatedAtAction("GetReceiver", new { id = receiver.receiverId }, receiver);
         }
 
-        // DELETE: api/Invoices/5
+        // DELETE: api/Receivers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteInvoice(int id)
+        public async Task<IActionResult> DeleteReceiver(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
-            if (invoice == null)
+            var receiver = await _context.Receivers.FindAsync(id);
+            if (receiver == null)
             {
                 return NotFound();
             }
 
-            _context.Invoices.Remove(invoice);
+            _context.Receivers.Remove(receiver);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool InvoiceExists(int id)
+        private bool ReceiverExists(int id)
         {
-            return _context.Invoices.Any(e => e.invoiceId == id);
+            return _context.Receivers.Any(e => e.receiverId == id);
         }
     }
 }

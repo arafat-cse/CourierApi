@@ -312,13 +312,10 @@ namespace CourierApi.Migrations
                     b.Property<DateTime>("createDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("customerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("particular")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("paymentMethodId")
+                    b.Property<int?>("paymentMethodId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("paymentTime")
@@ -333,8 +330,6 @@ namespace CourierApi.Migrations
                     b.HasKey("invoiceId");
 
                     b.HasIndex("ParcelsId");
-
-                    b.HasIndex("customerId");
 
                     b.HasIndex("paymentMethodId");
 
@@ -355,6 +350,10 @@ namespace CourierApi.Migrations
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
+                    b.Property<string>("TarkingCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("createBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -371,27 +370,23 @@ namespace CourierApi.Migrations
                     b.Property<DateTime>("estimatedReceiveTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("isDispatchedFromBranch")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isInTransit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isReceivedAtBranch")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isReceivedByReceiver")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("parcelCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("parcelTypeId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("percelSendingDestribution")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("recebingBranch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("recebingDistributin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("recebingReceber")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("receiveTime")
                         .HasColumnType("datetime2");
@@ -410,6 +405,9 @@ namespace CourierApi.Migrations
 
                     b.Property<int>("senderCustomerId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("sendingBranch")
+                        .HasColumnType("bit");
 
                     b.Property<string>("updateBy")
                         .IsRequired()
@@ -432,7 +430,11 @@ namespace CourierApi.Migrations
 
                     b.HasIndex("receiverBranchId");
 
+                    b.HasIndex("receiverCustomerId");
+
                     b.HasIndex("senderBranchId");
+
+                    b.HasIndex("senderCustomerId");
 
                     b.HasIndex("vanId");
 
@@ -503,6 +505,31 @@ namespace CourierApi.Migrations
                     b.HasKey("paymentMethodId");
 
                     b.ToTable("PaymentMethods");
+                });
+
+            modelBuilder.Entity("CourierApi.Models.Receiver", b =>
+                {
+                    b.Property<int>("receiverId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("receiverId"));
+
+                    b.Property<string>("ReceiverGmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("receiverName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("receiverPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("receiverId");
+
+                    b.ToTable("Receivers");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Staff", b =>
@@ -629,23 +656,11 @@ namespace CourierApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CourierApi.Models.Customer", "Customers")
+                    b.HasOne("CourierApi.Models.PaymentMethod", null)
                         .WithMany("Invoices")
-                        .HasForeignKey("customerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CourierApi.Models.PaymentMethod", "PaymentMethods")
-                        .WithMany("Invoices")
-                        .HasForeignKey("paymentMethodId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customers");
+                        .HasForeignKey("paymentMethodId");
 
                     b.Navigation("Parcels");
-
-                    b.Navigation("PaymentMethods");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Parcel", b =>
@@ -666,9 +681,21 @@ namespace CourierApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("CourierApi.Models.Receiver", "Receiver")
+                        .WithMany("Parcels")
+                        .HasForeignKey("receiverCustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("CourierApi.Models.Branch", "SenderBranch")
                         .WithMany("SenderBranch")
                         .HasForeignKey("senderBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CourierApi.Models.Customer", "Customer")
+                        .WithMany("Parcels")
+                        .HasForeignKey("senderCustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -677,9 +704,13 @@ namespace CourierApi.Migrations
                         .HasForeignKey("vanId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.Navigation("Customer");
+
                     b.Navigation("DeliveryCharge");
 
                     b.Navigation("ParcelType");
+
+                    b.Navigation("Receiver");
 
                     b.Navigation("ReceiverBranch");
 
@@ -715,7 +746,7 @@ namespace CourierApi.Migrations
 
             modelBuilder.Entity("CourierApi.Models.Customer", b =>
                 {
-                    b.Navigation("Invoices");
+                    b.Navigation("Parcels");
                 });
 
             modelBuilder.Entity("CourierApi.Models.DeliveryCharge", b =>
@@ -743,6 +774,11 @@ namespace CourierApi.Migrations
             modelBuilder.Entity("CourierApi.Models.PaymentMethod", b =>
                 {
                     b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("CourierApi.Models.Receiver", b =>
+                {
+                    b.Navigation("Parcels");
                 });
 
             modelBuilder.Entity("CourierApi.Models.Van", b =>
