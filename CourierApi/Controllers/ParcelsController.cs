@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourierApi.Data;
@@ -13,195 +14,95 @@ namespace CourierApi.Controllers
     [ApiController]
     public class ParcelsController : ControllerBase
     {
-        private readonly CourierDbContext _db;
-        private readonly CommanResponse cp = new CommanResponse();
+        private readonly CourierDbContext _context;
 
-        public ParcelsController(CourierDbContext db)
+        public ParcelsController(CourierDbContext context)
         {
-            _db = db;
+            _context = context;
         }
 
         // GET: api/Parcels
         [HttpGet]
-        public async Task<IActionResult> GetParcels()
+        public async Task<ActionResult<IEnumerable<Parcel>>> GetParcels()
         {
-            try
-            {
-                var parcels = await _db.Parcels
-                    .Include(p => p.SenderBranch)
-                    .Include(p => p.ReceiverBranch)
-                    .Include(p => p.ParcelType)
-                    .Include(p => p.DeliveryCharge)
-                    .Include(p => p.Van)
-                    .ToListAsync();
-
-                if (!parcels.Any())
-                {
-                    cp.status = false;
-                    cp.message = "No parcels found.";
-                    cp.content = null;
-                    return Ok(cp);
-                }
-
-                cp.status = true;
-                cp.message = "Parcels retrieved successfully.";
-                cp.content = parcels;
-                return Ok(cp);
-            }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Error occurred while retrieving parcels.";
-                cp.errorMessage = ex.Message;
-                cp.content = null;
-                return StatusCode(500, cp);
-            }
+            return await _context.Parcels.ToListAsync();
         }
 
-        // GET: api/Parcels/{id}
+        // GET: api/Parcels/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetParcel(int id)
+        public async Task<ActionResult<Parcel>> GetParcel(int id)
         {
-            try
-            {
-                var parcel = await _db.Parcels
-                    .Include(p => p.SenderBranch)
-                    .Include(p => p.ReceiverBranch)
-                    .Include(p => p.ParcelType)
-                    .Include(p => p.DeliveryCharge)
-                    .Include(p => p.Van)
-                    .FirstOrDefaultAsync(p => p.parcelId == id);
+            var parcel = await _context.Parcels.FindAsync(id);
 
-                if (parcel == null)
-                {
-                    cp.status = false;
-                    cp.message = "Parcel not found.";
-                    cp.content = null;
-                    return NotFound(cp);
-                }
-
-                cp.status = true;
-                cp.message = "Parcel retrieved successfully.";
-                cp.content = parcel;
-                return Ok(cp);
-            }
-            catch (Exception ex)
+            if (parcel == null)
             {
-                cp.status = false;
-                cp.message = "Error occurred while retrieving the parcel.";
-                cp.errorMessage = ex.Message;
-                cp.content = null;
-                return StatusCode(500, cp);
+                return NotFound();
             }
+
+            return parcel;
         }
 
-        // POST: api/Parcels
-        [HttpPost]
-        public async Task<IActionResult> PostParcel(Parcel parcel)
-        {
-            try
-            {
-                if (parcel.senderBranchId == parcel.receiverBranchId)
-                {
-                    cp.status = false;
-                    cp.message = "Sender and receiver branches cannot be the same.";
-                    return BadRequest(cp);
-                }
-
-                _db.Parcels.Add(parcel);
-                await _db.SaveChangesAsync();
-
-                cp.status = true;
-                cp.message = "Parcel created successfully.";
-                cp.content = parcel;
-                return CreatedAtAction(nameof(GetParcel), new { id = parcel.parcelId }, cp);
-            }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Error occurred while creating the parcel.";
-                cp.errorMessage = ex.Message;
-                cp.content = null;
-                return StatusCode(500, cp);
-            }
-        }
-
-        // PUT: api/Parcels/{id}
+        // PUT: api/Parcels/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutParcel(int id, Parcel parcel)
         {
             if (id != parcel.parcelId)
             {
-                cp.status = false;
-                cp.message = "Parcel ID mismatch.";
-                return BadRequest(cp);
+                return BadRequest();
             }
+
+            _context.Entry(parcel).State = EntityState.Modified;
 
             try
             {
-                _db.Entry(parcel).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
-
-                cp.status = true;
-                cp.message = "Parcel updated successfully.";
-                cp.content = parcel;
-                return Ok(cp);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ParcelExists(id))
                 {
-                    cp.status = false;
-                    cp.message = "Parcel not found.";
-                    return NotFound(cp);
+                    return NotFound();
                 }
                 else
                 {
                     throw;
                 }
             }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Error occurred while updating the parcel.";
-                cp.errorMessage = ex.Message;
-                return StatusCode(500, cp);
-            }
+
+            return NoContent();
         }
 
-        // DELETE: api/Parcels/{id}
+        // POST: api/Parcels
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Parcel>> PostParcel(Parcel parcel)
+        {
+            _context.Parcels.Add(parcel);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetParcel", new { id = parcel.parcelId }, parcel);
+        }
+
+        // DELETE: api/Parcels/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParcel(int id)
         {
-            try
+            var parcel = await _context.Parcels.FindAsync(id);
+            if (parcel == null)
             {
-                var parcel = await _db.Parcels.FindAsync(id);
-                if (parcel == null)
-                {
-                    cp.status = false;
-                    cp.message = "Parcel not found.";
-                    return NotFound(cp);
-                }
-
-                _db.Parcels.Remove(parcel);
-                await _db.SaveChangesAsync();
-
-                cp.status = true;
-                cp.message = "Parcel deleted successfully.";
-                return Ok(cp);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                cp.status = false;
-                cp.message = "Error occurred while deleting the parcel.";
-                cp.errorMessage = ex.Message;
-                return StatusCode(500, cp);
-            }
+
+            _context.Parcels.Remove(parcel);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         private bool ParcelExists(int id)
         {
-            return _db.Parcels.Any(p => p.parcelId == id);
+            return _context.Parcels.Any(e => e.parcelId == id);
         }
     }
 }
